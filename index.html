@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>Pure JS Pixel Mirror</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="code.js"></script>
+  </head>
+
+  <body>
+    <main class="app">
+      <div class="controls">
+        <label>
+          isReflected:
+          <input id="isReflectedCheckbox" type="checkbox" />
+        </label>
+        <label>
+          sliceWidth:
+          <input id="sliceWidthSlider" type="range" min="1" max="50" step="1" />
+        </label>
+        <label>
+          msPerFrame:
+          <input id="msPerFrameSlider" type="range" min="1" max="50" step="1" />
+        </label>
+      </div>
+      <canvas id="artCanvas" />
+      <video autoplay="true" id="videoElement"></video>
+    </main>
+  </body>
+</html>
