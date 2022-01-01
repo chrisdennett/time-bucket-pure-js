@@ -1,8 +1,10 @@
 import { drawSlitScanToCanvas } from "./utils/drawSlitScanToCanvas.js";
+import { drawVerticalSlitScanToCanvas } from "./utils/drawVerticalSlitScanToCanvas.js";
 import { getFlippedVideoCanvas } from "./utils/getFlippedVideoCanvas.js";
 
 // elements
 const artCanvas = document.querySelector("#artCanvas");
+const artCanvas2 = document.querySelector("#artCanvas2");
 const video = document.querySelector("#videoElement");
 const isReflectedCheckbox = document.querySelector("#isReflectedCheckbox");
 const sliceWidthSlider = document.querySelector("#sliceWidthSlider");
@@ -16,7 +18,7 @@ const sliceWidthSliderValue = document.querySelector("#sliceWidthSliderValue");
 const msPerFrameSliderValue = document.querySelector("#msPerFrameSliderValue");
 
 // global defaults
-let scanStartX = 0.5;
+let scanStartX = 1;
 let sliceWidth = 1;
 let msPerFrame = 1;
 let isReflected = false;
@@ -24,6 +26,11 @@ let lastDrawTime = null;
 
 // set up controls, webcam etc
 export function setup() {
+  setupControls();
+  setupWebcam();
+}
+
+function setupControls() {
   // show defaults on controls
   isReflectedCheckbox.checked = isReflected;
   sliceWidthSlider.value = sliceWidth;
@@ -57,7 +64,9 @@ export function setup() {
     msPerFrame = e.target.value;
     msPerFrameSliderValue.innerHTML = msPerFrame;
   }
+}
 
+function setupWebcam() {
   if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices
       .getUserMedia({
@@ -84,7 +93,13 @@ export function draw() {
   }
 
   const frameCanvas = getFlippedVideoCanvas(video);
+  drawHorizontalSlitScan(frameCanvas, drawSlice);
+  drawVerticalSlitScan(frameCanvas, drawSlice);
 
+  window.requestAnimationFrame(draw);
+}
+
+function drawHorizontalSlitScan(frameCanvas, drawSlice) {
   if (artCanvas.width < frameCanvas.width) {
     artCanvas.height = frameCanvas.height;
     artCanvas.width = frameCanvas.width;
@@ -98,6 +113,20 @@ export function draw() {
     drawSlice,
     scanStartX,
   });
+}
 
-  window.requestAnimationFrame(draw);
+function drawVerticalSlitScan(frameCanvas, drawSlice) {
+  if (artCanvas2.width < frameCanvas.width) {
+    artCanvas2.height = 1000;
+    artCanvas2.width = 600;
+  }
+
+  drawVerticalSlitScanToCanvas({
+    src: frameCanvas,
+    target: artCanvas2,
+    sliceWidth,
+    isReflected,
+    drawSlice,
+    scanStartX,
+  });
 }
