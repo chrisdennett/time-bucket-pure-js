@@ -9,6 +9,7 @@ const video = document.querySelector("#videoElement");
 const isReflectedCheckbox = document.querySelector("#isReflectedCheckbox");
 const isHorizontalCheckbox = document.querySelector("#isHorizontalCheckbox");
 const sliceSizeSlider = document.querySelector("#sliceSizeSlider");
+const canvasSizeSlider = document.querySelector("#canvasSizeSlider");
 const msPerFrameSlider = document.querySelector("#msPerFrameSlider");
 const scanStartPos = document.querySelector("#scanStartPos");
 const scanStartPosValue = document.querySelector("#scanStartPosValue");
@@ -20,6 +21,7 @@ const msPerFrameSliderValue = document.querySelector("#msPerFrameSliderValue");
 const isHorizontalCheckboxValue = document.querySelector(
   "#isHorizontalCheckboxValue"
 );
+const canvasSizeSliderValue = document.querySelector("#canvasSizeSliderValue");
 
 // global defaults
 let sliceStartPos = 0.5;
@@ -27,7 +29,8 @@ let sliceSize = 1;
 let msPerFrame = 1;
 let isReflected = false;
 let lastDrawTime = null;
-let isHorizontal = true;
+let isHorizontal = false;
+let canvasSize = 600;
 
 // set up controls, webcam etc
 export function setup() {
@@ -42,11 +45,13 @@ function setupControls() {
   msPerFrameSlider.value = msPerFrame;
   scanStartPos.value = sliceStartPos;
   isHorizontalCheckbox.checked = isHorizontal;
+  canvasSizeSlider.value = canvasSize;
 
   scanStartPosValue.innerHTML = sliceStartPos;
   isReflectedCheckboxValue.innerHTML = isReflected;
   sliceSizeSliderValue.innerHTML = sliceSize;
   msPerFrameSliderValue.innerHTML = msPerFrame;
+  canvasSizeSliderValue.innerHTML = canvasSize;
   isHorizontalCheckboxValue.innerHTML = isHorizontal
     ? "horizontal"
     : "vertical";
@@ -57,8 +62,13 @@ function setupControls() {
   sliceSizeSlider.addEventListener("input", onsliceSizeSliderChange);
   msPerFrameSlider.addEventListener("input", onMsPerFrameSliderChange);
   scanStartPos.addEventListener("input", onscanStartPos);
+  canvasSizeSlider.addEventListener("input", onCanvasSizeSliderChange);
 
   // functions
+  function onCanvasSizeSliderChange(e) {
+    canvasSize = e.target.value;
+    canvasSizeSliderValue.innerHTML = canvasSize;
+  }
   function onscanStartPos(e) {
     sliceStartPos = e.target.value;
     scanStartPosValue.innerHTML = sliceStartPos;
@@ -135,8 +145,11 @@ export function draw() {
 function drawHorizontalSlitScan(frameCanvas, drawSlice) {
   const canvasWidth = document.body.clientWidth - 40;
 
-  if (artCanvas.width !== canvasWidth) {
-    artCanvas.height = 200;
+  if (
+    artCanvas.width !== canvasWidth ||
+    artCanvas.height !== parseInt(canvasSize)
+  ) {
+    artCanvas.height = canvasSize;
     artCanvas.width = canvasWidth;
   }
 
@@ -153,9 +166,12 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice) {
 function drawVerticalSlitScan(frameCanvas, drawSlice) {
   const canvasHeight = document.body.clientHeight - 40;
 
-  if (artCanvas2.height !== canvasHeight) {
+  if (
+    artCanvas2.height !== canvasHeight ||
+    artCanvas2.width !== parseInt(canvasSize)
+  ) {
     artCanvas2.height = canvasHeight;
-    artCanvas2.width = 600;
+    artCanvas2.width = canvasSize;
   }
 
   drawVerticalSlitScanToCanvas({
