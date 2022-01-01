@@ -8,8 +8,6 @@ export function drawVerticalSlitScanToCanvas({
 }) {
   const ctx = target.getContext("2d");
 
-  const heightBeforeScan = src.height * scanStartX;
-
   drawLiveWebcamSection({
     src,
     target,
@@ -19,21 +17,26 @@ export function drawVerticalSlitScanToCanvas({
 
   if (!drawSlice) return;
 
+  const srcSectionH = scanStartX * src.height;
+  const scale = target.width / src.width;
+  const targSectionH = srcSectionH * scale;
+
   // draw the target image to itself
-  const xToShiftRightFrom = heightBeforeScan - sliceWidth;
-  const widthToShiftRight = target.width - xToShiftRightFrom;
-  const shiftToX = heightBeforeScan;
+  const heightBeforeScan = targSectionH;
+  const yToShiftDownFrom = heightBeforeScan - sliceWidth;
+  const heightToShiftDown = target.height - yToShiftDownFrom;
+  const shiftToY = heightBeforeScan;
 
   ctx.drawImage(
     target,
-    xToShiftRightFrom,
     0,
-    widthToShiftRight,
-    target.height,
-    shiftToX,
+    yToShiftDownFrom,
+    target.width,
+    heightToShiftDown,
     0,
-    widthToShiftRight,
-    target.height
+    shiftToY,
+    target.width,
+    heightToShiftDown
   );
 }
 
@@ -58,6 +61,7 @@ function drawLiveWebcamSection({ target, src, hFrac, isReflected }) {
     dest.h
   );
 
+  // improve the colours by redrawing it
   ctx.save();
   ctx.globalCompositeOperation = "multiply";
   ctx.globalAlpha = 0.7;
@@ -74,6 +78,7 @@ function drawLiveWebcamSection({ target, src, hFrac, isReflected }) {
   );
   ctx.restore();
 
+  // draw the left to the right, but flipped
   if (isReflected) {
     const halfW = dest.w / 2;
 

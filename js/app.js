@@ -19,7 +19,7 @@ const msPerFrameSliderValue = document.querySelector("#msPerFrameSliderValue");
 
 // global defaults
 let scanStartX = 1;
-let sliceWidth = 1;
+let sliceWidth = 100;
 let msPerFrame = 1;
 let isReflected = false;
 let lastDrawTime = null;
@@ -116,7 +116,7 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice) {
 }
 
 function drawVerticalSlitScan(frameCanvas, drawSlice) {
-  if (artCanvas2.width < frameCanvas.width) {
+  if (artCanvas2.width !== 600) {
     artCanvas2.height = 1000;
     artCanvas2.width = 600;
   }

@@ -44,12 +44,14 @@ function drawLiveWebcamSection({ target, src, w, isReflected }) {
   // draw live webcam portion of screen
   ctx.drawImage(src, 0, 0, w, h, 0, 0, w, h);
 
+  // improve the colours by redrawing it
   ctx.save();
   ctx.globalCompositeOperation = "multiply";
   ctx.globalAlpha = 0.7;
   ctx.drawImage(src, 0, 0, w, h, 0, 0, w, h);
   ctx.restore();
 
+  // draw the top to the bottom, but flipped
   if (isReflected) {
     const halfH = h / 2;
 
