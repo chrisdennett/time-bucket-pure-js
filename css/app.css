@@ -1,5 +1,3 @@
-/* CHRIS STARTS HERE */
-
 :root {
   --shadow-color: 0deg 0% 15%;
   --shadow-elevation-low: 0.3px 0.5px 0.5px hsl(var(--shadow-color) / 0.84),
@@ -19,13 +17,7 @@
     37.5px 75px 74.8px -4.1px hsl(var(--shadow-color) / 0.27);
 }
 
-#videoElement {
-  background-color: #666;
-  display: none;
-  position: absolute;
-}
-
-.app {
+#app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -34,10 +26,40 @@
   color: white;
 }
 
+#controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+}
+
+.control label {
+  display: inline-block;
+  width: 120px;
+}
+
+.control span {
+  margin-left: 10px;
+}
+
 canvas {
-  /* border: 1px solid red; */
   max-width: 95vw;
   border-radius: 10px;
-
   box-shadow: var(--shadow-elevation-high);
+}
+
+/* HIDE THE VIDEO */
+#videoElement {
+  background-color: #666;
+  display: none;
+  position: absolute;
 }

@@ -8,6 +8,12 @@ const isReflectedCheckbox = document.querySelector("#isReflectedCheckbox");
 const sliceWidthSlider = document.querySelector("#sliceWidthSlider");
 const msPerFrameSlider = document.querySelector("#msPerFrameSlider");
 const scanStartXSlider = document.querySelector("#scanStartXSlider");
+const scanStartXSliderValue = document.querySelector("#scanStartXSliderValue");
+const isReflectedCheckboxValue = document.querySelector(
+  "#isReflectedCheckboxValue"
+);
+const sliceWidthSliderValue = document.querySelector("#sliceWidthSliderValue");
+const msPerFrameSliderValue = document.querySelector("#msPerFrameSliderValue");
 
 // global defaults
 let scanStartX = 0.5;
@@ -23,6 +29,10 @@ export function setup() {
   sliceWidthSlider.value = sliceWidth;
   msPerFrameSlider.value = msPerFrame;
   scanStartXSlider.value = scanStartX;
+  scanStartXSliderValue.innerHTML = scanStartX;
+  isReflectedCheckboxValue.innerHTML = isReflected;
+  sliceWidthSliderValue.innerHTML = sliceWidth;
+  msPerFrameSliderValue.innerHTML = msPerFrame;
 
   // listeners
   isReflectedCheckbox.addEventListener("input", onIsReflectedCheckboxChange);
@@ -33,15 +43,19 @@ export function setup() {
   // functions
   function onScanStartXSlider(e) {
     scanStartX = e.target.value;
+    scanStartXSliderValue.innerHTML = scanStartX;
   }
   function onIsReflectedCheckboxChange(e) {
     isReflected = e.target.checked;
+    isReflectedCheckboxValue.innerHTML = isReflected;
   }
   function onSliceWidthSliderChange(e) {
     sliceWidth = e.target.value;
+    sliceWidthSliderValue.innerHTML = sliceWidth;
   }
   function onMsPerFrameSliderChange(e) {
     msPerFrame = e.target.value;
+    msPerFrameSliderValue.innerHTML = msPerFrame;
   }
 
   if (navigator.mediaDevices.getUserMedia) {

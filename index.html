@@ -1,38 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Pure JS Pixel Mirror</title>
+    <title>Pure JS Slit Scan Pixel Mirror</title>
     <link rel="stylesheet" href="css/global-reset.css" />
     <link rel="stylesheet" href="css/app.css" />
   </head>
 
   <body>
-    <main class="app">
+    <main id="app">
 
       <!-- CONTROLS -->
       <div id="controls">
-        <label>
-          scanStartXSlider:
+
+        <div class="control">
+          <label>scanStartXSlider:</label>
           <input
-            id="scanStartXSlider"
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
+          id="scanStartXSlider"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
           />
-        </label>
-        <label>
-          isReflected:
+          <span id="scanStartXSliderValue" />
+        </div>
+        
+        <div class="control">
+          <label>isReflected:</label>
           <input id="isReflectedCheckbox" type="checkbox" />
-        </label>
-        <label>
-          sliceWidth:
+          <span id="isReflectedCheckboxValue" />
+        </div>
+        
+        <div class="control">
+          <label>sliceWidth:</label>
           <input id="sliceWidthSlider" type="range" min="1" max="50" step="1" />
-        </label>
-        <label>
-          msPerFrame:
+          <span id="sliceWidthSliderValue" />
+        </div>
+        
+        <div class="control">
+          <label>msPerFrame:</label>
           <input id="msPerFrameSlider" type="range" min="1" max="50" step="1" />
-        </label>
+          <span id="msPerFrameSliderValue" />
+        </div>
+        
       </div>
 
       <!-- HORIZONTAL CANVAS -->
