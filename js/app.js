@@ -7,6 +7,7 @@ const artCanvas = document.querySelector("#artCanvas");
 const artCanvas2 = document.querySelector("#artCanvas2");
 const video = document.querySelector("#videoElement");
 const isReflectedCheckbox = document.querySelector("#isReflectedCheckbox");
+const isHorizontalCheckbox = document.querySelector("#isHorizontalCheckbox");
 const sliceWidthSlider = document.querySelector("#sliceWidthSlider");
 const msPerFrameSlider = document.querySelector("#msPerFrameSlider");
 const scanStartXSlider = document.querySelector("#scanStartXSlider");
@@ -16,13 +17,17 @@ const isReflectedCheckboxValue = document.querySelector(
 );
 const sliceWidthSliderValue = document.querySelector("#sliceWidthSliderValue");
 const msPerFrameSliderValue = document.querySelector("#msPerFrameSliderValue");
+const isHorizontalCheckboxValue = document.querySelector(
+  "#isHorizontalCheckboxValue"
+);
 
 // global defaults
-let scanStartX = 1;
-let sliceWidth = 100;
+let scanStartX = 0.5;
+let sliceWidth = 1;
 let msPerFrame = 1;
 let isReflected = false;
 let lastDrawTime = null;
+let isHorizontal = true;
 
 // set up controls, webcam etc
 export function setup() {
@@ -36,13 +41,19 @@ function setupControls() {
   sliceWidthSlider.value = sliceWidth;
   msPerFrameSlider.value = msPerFrame;
   scanStartXSlider.value = scanStartX;
+  isHorizontalCheckbox.checked = isHorizontal;
+
   scanStartXSliderValue.innerHTML = scanStartX;
   isReflectedCheckboxValue.innerHTML = isReflected;
   sliceWidthSliderValue.innerHTML = sliceWidth;
   msPerFrameSliderValue.innerHTML = msPerFrame;
+  isHorizontalCheckboxValue.innerHTML = isHorizontal
+    ? "horizontal"
+    : "vertical";
 
   // listeners
   isReflectedCheckbox.addEventListener("input", onIsReflectedCheckboxChange);
+  isHorizontalCheckbox.addEventListener("input", isHorizontalCheckboxChange);
   sliceWidthSlider.addEventListener("input", onSliceWidthSliderChange);
   msPerFrameSlider.addEventListener("input", onMsPerFrameSliderChange);
   scanStartXSlider.addEventListener("input", onScanStartXSlider);
@@ -55,6 +66,12 @@ function setupControls() {
   function onIsReflectedCheckboxChange(e) {
     isReflected = e.target.checked;
     isReflectedCheckboxValue.innerHTML = isReflected;
+  }
+  function isHorizontalCheckboxChange(e) {
+    isHorizontal = e.target.checked;
+    isHorizontalCheckboxValue.innerHTML = isHorizontal
+      ? "horizontal"
+      : "vertical";
   }
   function onSliceWidthSliderChange(e) {
     sliceWidth = e.target.value;
@@ -93,16 +110,34 @@ export function draw() {
   }
 
   const frameCanvas = getFlippedVideoCanvas(video);
-  drawHorizontalSlitScan(frameCanvas, drawSlice);
-  drawVerticalSlitScan(frameCanvas, drawSlice);
+
+  if (isHorizontal) {
+    drawHorizontalSlitScan(frameCanvas, drawSlice);
+    if (artCanvas2.style.display !== "none") {
+      artCanvas2.style.display = "none";
+    }
+    if (artCanvas.style.display === "none") {
+      artCanvas.style.display = "inherit";
+    }
+  } else {
+    drawVerticalSlitScan(frameCanvas, drawSlice);
+    if (artCanvas.style.display !== "none") {
+      artCanvas.style.display = "none";
+    }
+    if (artCanvas2.style.display === "none") {
+      artCanvas2.style.display = "inherit";
+    }
+  }
 
   window.requestAnimationFrame(draw);
 }
 
 function drawHorizontalSlitScan(frameCanvas, drawSlice) {
-  if (artCanvas.width < frameCanvas.width) {
-    artCanvas.height = frameCanvas.height;
-    artCanvas.width = frameCanvas.width;
+  const canvasWidth = document.body.clientWidth - 40;
+
+  if (artCanvas.width !== canvasWidth) {
+    artCanvas.height = 600;
+    artCanvas.width = canvasWidth;
   }
 
   drawSlitScanToCanvas({
@@ -116,8 +151,10 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice) {
 }
 
 function drawVerticalSlitScan(frameCanvas, drawSlice) {
-  if (artCanvas2.width !== 600) {
-    artCanvas2.height = 1000;
+  const canvasHeight = document.body.clientHeight - 40;
+
+  if (artCanvas2.height !== canvasHeight) {
+    artCanvas2.height = canvasHeight;
     artCanvas2.width = 600;
   }
 
