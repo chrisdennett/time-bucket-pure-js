@@ -1,13 +1,23 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <title>Pure JS Pixel Mirror</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="code.js"></script>
   </head>
 
   <body>
     <main class="app">
       <div class="controls">
+        <label>
+          scanStartXSlider:
+          <input
+            id="scanStartXSlider"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+          />
+        </label>
         <label>
           isReflected:
           <input id="isReflectedCheckbox" type="checkbox" />
@@ -24,5 +34,7 @@
       <canvas id="artCanvas" />
       <video autoplay="true" id="videoElement"></video>
     </main>
+
+    <script type="module" src="./js/index.js"></script>
   </body>
 </html>
