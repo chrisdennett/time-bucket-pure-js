@@ -4,22 +4,26 @@ export function drawSlitScanToCanvas({
   sliceSize,
   isReflected,
   drawSlice,
-  scanStartX,
+  sliceStartPos,
 }) {
   const ctx = target.getContext("2d");
 
-  const widthBeforeScan = src.width * scanStartX;
+  const srcSectionW = sliceStartPos * src.width;
+  const scale = target.height / src.height;
+  const targSectionW = srcSectionW * scale;
 
   drawLiveWebcamSection({
     src,
     target,
-    w: widthBeforeScan,
     isReflected,
+    srcSectionW,
+    targSectionW,
   });
 
   if (!drawSlice) return;
 
   // draw the target image to itself
+  const widthBeforeScan = targSectionW;
   const xToShiftRightFrom = widthBeforeScan - sliceSize;
   const widthToShiftRight = target.width - xToShiftRightFrom;
   const shiftToX = widthBeforeScan;
@@ -37,27 +41,66 @@ export function drawSlitScanToCanvas({
   );
 }
 
-function drawLiveWebcamSection({ target, src, w, isReflected }) {
+function drawLiveWebcamSection({
+  target,
+  src,
+  isReflected,
+  srcSectionW,
+  targSectionW,
+}) {
   const ctx = target.getContext("2d");
-  const h = src.height;
+  //   const h = src.height;
 
   // draw live webcam portion of screen
-  ctx.drawImage(src, 0, 0, w, h, 0, 0, w, h);
+  const source = { x: 0, y: 0, w: srcSectionW, h: src.height };
+  const dest = { x: 0, y: 0, w: targSectionW, h: target.height };
+  ctx.drawImage(
+    src,
+    source.x,
+    source.y,
+    source.w,
+    source.h,
+    dest.x,
+    dest.y,
+    dest.w,
+    dest.h
+  );
 
   // improve the colours by redrawing it
   ctx.save();
   ctx.globalCompositeOperation = "multiply";
   ctx.globalAlpha = 0.7;
-  ctx.drawImage(src, 0, 0, w, h, 0, 0, w, h);
+  ctx.drawImage(
+    src,
+    source.x,
+    source.y,
+    source.w,
+    source.h,
+    dest.x,
+    dest.y,
+    dest.w,
+    dest.h
+  );
   ctx.restore();
 
   // draw the top to the bottom, but flipped
   if (isReflected) {
-    const halfH = h / 2;
+    const halfH = dest.h / 2;
 
     ctx.save();
+    ctx.translate(0, halfH * 2);
     ctx.scale(1, -1);
-    ctx.drawImage(target, 0, 0, w, halfH, 0, halfH * -2, w, halfH);
+    ctx.drawImage(
+      target,
+      dest.x,
+      dest.y,
+      dest.w,
+      dest.h / 2,
+      dest.x,
+      dest.y,
+      dest.w,
+      halfH
+    );
     ctx.restore();
   }
 }

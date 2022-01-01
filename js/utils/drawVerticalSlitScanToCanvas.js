@@ -4,22 +4,23 @@ export function drawVerticalSlitScanToCanvas({
   sliceSize,
   isReflected,
   drawSlice,
-  scanStartX,
+  sliceStartPos,
 }) {
   const ctx = target.getContext("2d");
+
+  const srcSectionH = sliceStartPos * src.height;
+  const scale = target.width / src.width;
+  const targSectionH = srcSectionH * scale;
 
   drawLiveWebcamSection({
     src,
     target,
-    hFrac: scanStartX,
     isReflected,
+    srcSectionH,
+    targSectionH,
   });
 
   if (!drawSlice) return;
-
-  const srcSectionH = scanStartX * src.height;
-  const scale = target.width / src.width;
-  const targSectionH = srcSectionH * scale;
 
   // draw the target image to itself
   const heightBeforeScan = targSectionH;
@@ -40,11 +41,14 @@ export function drawVerticalSlitScanToCanvas({
   );
 }
 
-function drawLiveWebcamSection({ target, src, hFrac, isReflected }) {
+function drawLiveWebcamSection({
+  target,
+  src,
+  isReflected,
+  srcSectionH,
+  targSectionH,
+}) {
   const ctx = target.getContext("2d");
-  const srcSectionH = hFrac * src.height;
-  const scale = target.width / src.width;
-  const targSectionH = srcSectionH * scale;
 
   // draw live webcam portion of screen
   const source = { x: 0, y: 0, w: src.width, h: srcSectionH };

@@ -22,7 +22,7 @@ const isHorizontalCheckboxValue = document.querySelector(
 );
 
 // global defaults
-let scanStartX = 0.5;
+let sliceStartPos = 0.5;
 let sliceSize = 1;
 let msPerFrame = 1;
 let isReflected = false;
@@ -40,10 +40,10 @@ function setupControls() {
   isReflectedCheckbox.checked = isReflected;
   sliceSizeSlider.value = sliceSize;
   msPerFrameSlider.value = msPerFrame;
-  scanStartPos.value = scanStartX;
+  scanStartPos.value = sliceStartPos;
   isHorizontalCheckbox.checked = isHorizontal;
 
-  scanStartPosValue.innerHTML = scanStartX;
+  scanStartPosValue.innerHTML = sliceStartPos;
   isReflectedCheckboxValue.innerHTML = isReflected;
   sliceSizeSliderValue.innerHTML = sliceSize;
   msPerFrameSliderValue.innerHTML = msPerFrame;
@@ -60,8 +60,8 @@ function setupControls() {
 
   // functions
   function onscanStartPos(e) {
-    scanStartX = e.target.value;
-    scanStartPosValue.innerHTML = scanStartX;
+    sliceStartPos = e.target.value;
+    scanStartPosValue.innerHTML = sliceStartPos;
   }
   function onIsReflectedCheckboxChange(e) {
     isReflected = e.target.checked;
@@ -136,7 +136,7 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice) {
   const canvasWidth = document.body.clientWidth - 40;
 
   if (artCanvas.width !== canvasWidth) {
-    artCanvas.height = 600;
+    artCanvas.height = 200;
     artCanvas.width = canvasWidth;
   }
 
@@ -146,7 +146,7 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice) {
     sliceSize,
     isReflected,
     drawSlice,
-    scanStartX,
+    sliceStartPos,
   });
 }
 
@@ -164,6 +164,6 @@ function drawVerticalSlitScan(frameCanvas, drawSlice) {
     sliceSize,
     isReflected,
     drawSlice,
-    scanStartX,
+    sliceStartPos,
   });
 }
