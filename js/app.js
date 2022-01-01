@@ -8,14 +8,14 @@ const artCanvas2 = document.querySelector("#artCanvas2");
 const video = document.querySelector("#videoElement");
 const isReflectedCheckbox = document.querySelector("#isReflectedCheckbox");
 const isHorizontalCheckbox = document.querySelector("#isHorizontalCheckbox");
-const sliceWidthSlider = document.querySelector("#sliceWidthSlider");
+const sliceSizeSlider = document.querySelector("#sliceSizeSlider");
 const msPerFrameSlider = document.querySelector("#msPerFrameSlider");
-const scanStartXSlider = document.querySelector("#scanStartXSlider");
-const scanStartXSliderValue = document.querySelector("#scanStartXSliderValue");
+const scanStartPos = document.querySelector("#scanStartPos");
+const scanStartPosValue = document.querySelector("#scanStartPosValue");
 const isReflectedCheckboxValue = document.querySelector(
   "#isReflectedCheckboxValue"
 );
-const sliceWidthSliderValue = document.querySelector("#sliceWidthSliderValue");
+const sliceSizeSliderValue = document.querySelector("#sliceSizeSliderValue");
 const msPerFrameSliderValue = document.querySelector("#msPerFrameSliderValue");
 const isHorizontalCheckboxValue = document.querySelector(
   "#isHorizontalCheckboxValue"
@@ -23,7 +23,7 @@ const isHorizontalCheckboxValue = document.querySelector(
 
 // global defaults
 let scanStartX = 0.5;
-let sliceWidth = 1;
+let sliceSize = 1;
 let msPerFrame = 1;
 let isReflected = false;
 let lastDrawTime = null;
@@ -38,14 +38,14 @@ export function setup() {
 function setupControls() {
   // show defaults on controls
   isReflectedCheckbox.checked = isReflected;
-  sliceWidthSlider.value = sliceWidth;
+  sliceSizeSlider.value = sliceSize;
   msPerFrameSlider.value = msPerFrame;
-  scanStartXSlider.value = scanStartX;
+  scanStartPos.value = scanStartX;
   isHorizontalCheckbox.checked = isHorizontal;
 
-  scanStartXSliderValue.innerHTML = scanStartX;
+  scanStartPosValue.innerHTML = scanStartX;
   isReflectedCheckboxValue.innerHTML = isReflected;
-  sliceWidthSliderValue.innerHTML = sliceWidth;
+  sliceSizeSliderValue.innerHTML = sliceSize;
   msPerFrameSliderValue.innerHTML = msPerFrame;
   isHorizontalCheckboxValue.innerHTML = isHorizontal
     ? "horizontal"
@@ -54,14 +54,14 @@ function setupControls() {
   // listeners
   isReflectedCheckbox.addEventListener("input", onIsReflectedCheckboxChange);
   isHorizontalCheckbox.addEventListener("input", isHorizontalCheckboxChange);
-  sliceWidthSlider.addEventListener("input", onSliceWidthSliderChange);
+  sliceSizeSlider.addEventListener("input", onsliceSizeSliderChange);
   msPerFrameSlider.addEventListener("input", onMsPerFrameSliderChange);
-  scanStartXSlider.addEventListener("input", onScanStartXSlider);
+  scanStartPos.addEventListener("input", onscanStartPos);
 
   // functions
-  function onScanStartXSlider(e) {
+  function onscanStartPos(e) {
     scanStartX = e.target.value;
-    scanStartXSliderValue.innerHTML = scanStartX;
+    scanStartPosValue.innerHTML = scanStartX;
   }
   function onIsReflectedCheckboxChange(e) {
     isReflected = e.target.checked;
@@ -73,9 +73,9 @@ function setupControls() {
       ? "horizontal"
       : "vertical";
   }
-  function onSliceWidthSliderChange(e) {
-    sliceWidth = e.target.value;
-    sliceWidthSliderValue.innerHTML = sliceWidth;
+  function onsliceSizeSliderChange(e) {
+    sliceSize = e.target.value;
+    sliceSizeSliderValue.innerHTML = sliceSize;
   }
   function onMsPerFrameSliderChange(e) {
     msPerFrame = e.target.value;
@@ -143,7 +143,7 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice) {
   drawSlitScanToCanvas({
     src: frameCanvas,
     target: artCanvas,
-    sliceWidth,
+    sliceSize,
     isReflected,
     drawSlice,
     scanStartX,
@@ -161,7 +161,7 @@ function drawVerticalSlitScan(frameCanvas, drawSlice) {
   drawVerticalSlitScanToCanvas({
     src: frameCanvas,
     target: artCanvas2,
-    sliceWidth,
+    sliceSize,
     isReflected,
     drawSlice,
     scanStartX,

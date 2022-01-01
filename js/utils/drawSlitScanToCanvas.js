@@ -1,7 +1,7 @@
 export function drawSlitScanToCanvas({
   src,
   target,
-  sliceWidth,
+  sliceSize,
   isReflected,
   drawSlice,
   scanStartX,
@@ -20,7 +20,7 @@ export function drawSlitScanToCanvas({
   if (!drawSlice) return;
 
   // draw the target image to itself
-  const xToShiftRightFrom = widthBeforeScan - sliceWidth;
+  const xToShiftRightFrom = widthBeforeScan - sliceSize;
   const widthToShiftRight = target.width - xToShiftRightFrom;
   const shiftToX = widthBeforeScan;
 

@@ -1,7 +1,7 @@
 export function drawVerticalSlitScanToCanvas({
   src,
   target,
-  sliceWidth,
+  sliceSize,
   isReflected,
   drawSlice,
   scanStartX,
@@ -23,7 +23,7 @@ export function drawVerticalSlitScanToCanvas({
 
   // draw the target image to itself
   const heightBeforeScan = targSectionH;
-  const yToShiftDownFrom = heightBeforeScan - sliceWidth;
+  const yToShiftDownFrom = heightBeforeScan - sliceSize;
   const heightToShiftDown = target.height - yToShiftDownFrom;
   const shiftToY = heightBeforeScan;
 
