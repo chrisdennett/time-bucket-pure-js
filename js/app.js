@@ -29,10 +29,10 @@ const canvasSizeSliderValue = document.querySelector("#canvasSizeSliderValue");
 
 // global defaults
 let sliceStartPos = 1;
-let sliceSize = 3;
+let sliceSize = 1;
 let msPerFrame = 1;
 let lastDrawTime = null;
-let canvasSize = 350;
+let canvasSize = 320;
 let isReflected = false;
 let isHorizontal = true;
 let webcamAtStart = true;
@@ -113,7 +113,7 @@ function setupWebcam() {
   if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices
       .getUserMedia({
-        video: { width: 1280, height: 720 },
+        video: { width: 320, height: 240 },
       })
       .then(function (stream) {
         video.srcObject = stream;
