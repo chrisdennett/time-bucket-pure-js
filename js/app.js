@@ -28,11 +28,11 @@ const webcamAtStartCheckboxValue = document.querySelector(
 const canvasSizeSliderValue = document.querySelector("#canvasSizeSliderValue");
 
 // global defaults
-let sliceStartPos = 0.5;
-let sliceSize = 1;
+let sliceStartPos = 1;
+let sliceSize = 3;
 let msPerFrame = 1;
 let lastDrawTime = null;
-let canvasSize = 520;
+let canvasSize = 350;
 let isReflected = false;
 let isHorizontal = true;
 let webcamAtStart = true;

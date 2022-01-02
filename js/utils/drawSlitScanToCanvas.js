@@ -56,6 +56,7 @@ function drawSliceMovingRight({ ctx, target, targSectionW, sliceSize }) {
 }
 
 function drawSliceMovingLeft({ ctx, target, targSectionW, sliceSize }) {
+  // TODO: Figure out why this works
   const widthToShiftLeft = target.width + (sliceSize - targSectionW);
 
   const from = {
