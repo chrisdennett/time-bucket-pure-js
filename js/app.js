@@ -31,10 +31,10 @@ const canvasSizeSliderValue = document.querySelector("#canvasSizeSliderValue");
 let sliceStartPos = 0.5;
 let sliceSize = 1;
 let msPerFrame = 1;
-let isReflected = false;
 let lastDrawTime = null;
-let isHorizontal = false;
 let canvasSize = 520;
+let isReflected = false;
+let isHorizontal = true;
 let webcamAtStart = true;
 
 // set up controls, webcam etc
@@ -158,7 +158,7 @@ export function draw() {
   window.requestAnimationFrame(draw);
 }
 
-function drawHorizontalSlitScan(frameCanvas, drawSlice) {
+function drawHorizontalSlitScan(frameCanvas, drawSlice, webcamAtStart) {
   const canvasWidth = document.body.clientWidth - 40;
 
   if (

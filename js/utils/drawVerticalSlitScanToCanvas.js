@@ -37,7 +37,8 @@ export function drawVerticalSlitScanToCanvas({
 }
 
 function drawSliceMovingDown({ ctx, target, targSectionH, sliceSize }) {
-  const heightToShiftDown = target.height - (sliceSize + targSectionH);
+  //   const heightToShiftDown = target.height - (sliceSize + targSectionH);
+  const heightToShiftDown = target.height + sliceSize - targSectionH;
 
   const from = {
     x: 0,
@@ -56,7 +57,8 @@ function drawSliceMovingDown({ ctx, target, targSectionH, sliceSize }) {
 }
 
 function drawSliceMovingUp({ ctx, target, targSectionH, sliceSize }) {
-  const heightToShiftUp = target.height + sliceSize - targSectionH;
+  // TODO: Figure out why this works
+  const heightToShiftUp = target.height + (sliceSize - targSectionH);
 
   const from = {
     x: 0,
