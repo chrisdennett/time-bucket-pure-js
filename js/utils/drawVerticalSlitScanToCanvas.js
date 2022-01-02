@@ -101,21 +101,21 @@ function drawLiveWebcamSection({
   );
 
   // improve the colours by redrawing it
-  ctx.save();
-  ctx.globalCompositeOperation = "multiply";
-  ctx.globalAlpha = 0.7;
-  ctx.drawImage(
-    src,
-    source.x,
-    source.y,
-    source.w,
-    source.h,
-    dest.x,
-    dest.y,
-    dest.w,
-    dest.h
-  );
-  ctx.restore();
+  //   ctx.save();
+  //   ctx.globalCompositeOperation = "multiply";
+  //   ctx.globalAlpha = 0.7;
+  //   ctx.drawImage(
+  //     src,
+  //     source.x,
+  //     source.y,
+  //     source.w,
+  //     source.h,
+  //     dest.x,
+  //     dest.y,
+  //     dest.w,
+  //     dest.h
+  //   );
+  //   ctx.restore();
 
   // draw the left to the right, but flipped
   if (isReflected) {
@@ -174,21 +174,21 @@ function drawLiveWebcamSectionAtEnd({
   );
 
   // improve the colours by redrawing it
-  ctx.save();
-  ctx.globalCompositeOperation = "multiply";
-  ctx.globalAlpha = 0.7;
-  ctx.drawImage(
-    src,
-    source.x,
-    source.y,
-    source.w,
-    source.h,
-    dest.x,
-    dest.y,
-    dest.w,
-    dest.h
-  );
-  ctx.restore();
+  //   ctx.save();
+  //   ctx.globalCompositeOperation = "multiply";
+  //   ctx.globalAlpha = 0.7;
+  //   ctx.drawImage(
+  //     src,
+  //     source.x,
+  //     source.y,
+  //     source.w,
+  //     source.h,
+  //     dest.x,
+  //     dest.y,
+  //     dest.w,
+  //     dest.h
+  //   );
+  //   ctx.restore();
 
   // draw the left to the right, but flipped
   if (isReflected) {
