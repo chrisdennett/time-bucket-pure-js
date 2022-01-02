@@ -13,6 +13,12 @@
       <div id="controls">
 
         <div class="control">
+          <label>webcam at start/end:</label>
+          <input id="webcamAtStartCheckbox" type="checkbox" />
+          <span id="webcamAtStartCheckboxValue" />
+        </div>
+
+        <div class="control">
           <label>horizontal/vertical:</label>
           <input id="isHorizontalCheckbox" type="checkbox" />
           <span id="isHorizontalCheckboxValue" />
@@ -23,7 +29,7 @@
           <input
           id="scanStartPos"
           type="range"
-          min="0"
+          min="0.01"
           max="1"
           step="0.01"
           />

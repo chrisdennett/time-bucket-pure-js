@@ -8,6 +8,7 @@ const artCanvas2 = document.querySelector("#artCanvas2");
 const video = document.querySelector("#videoElement");
 const isReflectedCheckbox = document.querySelector("#isReflectedCheckbox");
 const isHorizontalCheckbox = document.querySelector("#isHorizontalCheckbox");
+const webcamAtStartCheckbox = document.querySelector("#webcamAtStartCheckbox");
 const sliceSizeSlider = document.querySelector("#sliceSizeSlider");
 const canvasSizeSlider = document.querySelector("#canvasSizeSlider");
 const msPerFrameSlider = document.querySelector("#msPerFrameSlider");
@@ -21,6 +22,9 @@ const msPerFrameSliderValue = document.querySelector("#msPerFrameSliderValue");
 const isHorizontalCheckboxValue = document.querySelector(
   "#isHorizontalCheckboxValue"
 );
+const webcamAtStartCheckboxValue = document.querySelector(
+  "#webcamAtStartCheckboxValue"
+);
 const canvasSizeSliderValue = document.querySelector("#canvasSizeSliderValue");
 
 // global defaults
@@ -30,7 +34,8 @@ let msPerFrame = 1;
 let isReflected = false;
 let lastDrawTime = null;
 let isHorizontal = false;
-let canvasSize = 600;
+let canvasSize = 520;
+let webcamAtStart = true;
 
 // set up controls, webcam etc
 export function setup() {
@@ -41,10 +46,11 @@ export function setup() {
 function setupControls() {
   // show defaults on controls
   isReflectedCheckbox.checked = isReflected;
+  webcamAtStartCheckbox.checked = webcamAtStart;
+  isHorizontalCheckbox.checked = isHorizontal;
   sliceSizeSlider.value = sliceSize;
   msPerFrameSlider.value = msPerFrame;
   scanStartPos.value = sliceStartPos;
-  isHorizontalCheckbox.checked = isHorizontal;
   canvasSizeSlider.value = canvasSize;
 
   scanStartPosValue.innerHTML = sliceStartPos;
@@ -53,12 +59,16 @@ function setupControls() {
   msPerFrameSliderValue.innerHTML = msPerFrame;
   canvasSizeSliderValue.innerHTML = canvasSize;
   isHorizontalCheckboxValue.innerHTML = isHorizontal
-    ? "horizontal"
-    : "vertical";
+    ? "(is horizontal)"
+    : "(is vertical)";
+  webcamAtStartCheckboxValue.innerHTML = webcamAtStart
+    ? "(is at start)"
+    : "(is at end)";
 
   // listeners
   isReflectedCheckbox.addEventListener("input", onIsReflectedCheckboxChange);
   isHorizontalCheckbox.addEventListener("input", isHorizontalCheckboxChange);
+  webcamAtStartCheckbox.addEventListener("input", webcamAtStartCheckboxChange);
   sliceSizeSlider.addEventListener("input", onsliceSizeSliderChange);
   msPerFrameSlider.addEventListener("input", onMsPerFrameSliderChange);
   scanStartPos.addEventListener("input", onscanStartPos);
@@ -80,8 +90,14 @@ function setupControls() {
   function isHorizontalCheckboxChange(e) {
     isHorizontal = e.target.checked;
     isHorizontalCheckboxValue.innerHTML = isHorizontal
-      ? "horizontal"
-      : "vertical";
+      ? "(is horizontal)"
+      : "(is vertical)";
+  }
+  function webcamAtStartCheckboxChange(e) {
+    webcamAtStart = e.target.checked;
+    webcamAtStartCheckboxValue.innerHTML = webcamAtStart
+      ? "(is at start)"
+      : "(is at end)";
   }
   function onsliceSizeSliderChange(e) {
     sliceSize = e.target.value;
@@ -122,7 +138,7 @@ export function draw() {
   const frameCanvas = getFlippedVideoCanvas(video);
 
   if (isHorizontal) {
-    drawHorizontalSlitScan(frameCanvas, drawSlice);
+    drawHorizontalSlitScan(frameCanvas, drawSlice, webcamAtStart);
     if (artCanvas2.style.display !== "none") {
       artCanvas2.style.display = "none";
     }
@@ -130,7 +146,7 @@ export function draw() {
       artCanvas.style.display = "inherit";
     }
   } else {
-    drawVerticalSlitScan(frameCanvas, drawSlice);
+    drawVerticalSlitScan(frameCanvas, drawSlice, webcamAtStart);
     if (artCanvas.style.display !== "none") {
       artCanvas.style.display = "none";
     }
@@ -160,10 +176,11 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice) {
     isReflected,
     drawSlice,
     sliceStartPos,
+    webcamAtStart,
   });
 }
 
-function drawVerticalSlitScan(frameCanvas, drawSlice) {
+function drawVerticalSlitScan(frameCanvas, drawSlice, webcamAtStart) {
   const canvasHeight = document.body.clientHeight - 40;
 
   if (
@@ -181,5 +198,6 @@ function drawVerticalSlitScan(frameCanvas, drawSlice) {
     isReflected,
     drawSlice,
     sliceStartPos,
+    webcamAtStart,
   });
 }
