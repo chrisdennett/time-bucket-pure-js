@@ -25,6 +25,7 @@ body {
   align-items: center;
   justify-content: center;
   color: white;
+  overflow: hidden;
 }
 
 #app {
@@ -50,6 +51,7 @@ canvas {
 
 #controls {
   position: fixed;
+  z-index: 1;
   top: 0;
   left: 0;
   display: flex;

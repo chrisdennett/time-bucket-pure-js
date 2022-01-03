@@ -7,9 +7,9 @@ const allControls = [
     name: "mountSize",
     type: "Slider",
     min: 0,
-    max: 1,
+    max: 0.33,
     step: 0.01,
-    value: 0.4,
+    value: 0.1,
   },
 ];
 
@@ -33,6 +33,11 @@ for (let c of allControls) {
 
   let valueElement = document.createElement("span");
   valueElement.innerHTML = c.value;
+
+  inputElement.addEventListener("input", (e) => {
+    c.value = e.target.value;
+    valueElement.innerHTML = e.target.value;
+  });
 
   holdingDiv.appendChild(labelElement);
   holdingDiv.appendChild(inputElement);
@@ -93,7 +98,7 @@ function setupControls() {
   msPerFrameSlider.value = msPerFrame;
   scanStartPosSlider.value = scanStartPos;
   canvasSizeSlider.value = canvasSize;
-  // controls.style.display = "none";
+  controls.style.display = "none";
 
   // update value elements to show default values
   scanStartPosValue.innerHTML = scanStartPos;
@@ -193,7 +198,7 @@ export function draw() {
   const frameCanvas = getFlippedVideoCanvas(video);
 
   if (isHorizontal) {
-    drawHorizontalSlitScan(frameCanvas, drawSlice, webcamAtStart);
+    drawHorizontalSlitScan(frameCanvas, drawSlice, webcamAtStart, allControls);
     if (artCanvas2.style.display !== "none") {
       artCanvas2.style.display = "none";
     }
@@ -201,7 +206,7 @@ export function draw() {
       artCanvas.style.display = "inherit";
     }
   } else {
-    drawVerticalSlitScan(frameCanvas, drawSlice, webcamAtStart);
+    drawVerticalSlitScan(frameCanvas, drawSlice, webcamAtStart, allControls);
     if (artCanvas.style.display !== "none") {
       artCanvas.style.display = "none";
     }
@@ -213,7 +218,12 @@ export function draw() {
   window.requestAnimationFrame(draw);
 }
 
-function drawHorizontalSlitScan(frameCanvas, drawSlice, webcamAtStart) {
+function drawHorizontalSlitScan(
+  frameCanvas,
+  drawSlice,
+  webcamAtStart,
+  allControls
+) {
   const canvasWidth = document.body.clientWidth - 40;
 
   if (
@@ -235,11 +245,20 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice, webcamAtStart) {
   });
 }
 
-function drawVerticalSlitScan(frameCanvas, drawSlice, webcamAtStart) {
-  const canvasHeight = document.body.clientHeight - 40;
+function drawVerticalSlitScan(
+  frameCanvas,
+  drawSlice,
+  webcamAtStart,
+  allControls
+) {
+  const fullHeight = document.body.clientHeight;
+  let mountSize = allControls[0].value * fullHeight;
+
+  if (!mountSize) mountSize = 0;
+  const canvasHeight = document.body.clientHeight - mountSize;
 
   if (
-    artCanvas2.height !== canvasHeight ||
+    artCanvas2.height !== parseInt(canvasHeight) ||
     artCanvas2.width !== parseInt(canvasSize)
   ) {
     artCanvas2.height = canvasHeight;
