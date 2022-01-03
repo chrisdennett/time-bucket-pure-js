@@ -2,17 +2,58 @@ import { drawSlitScanToCanvas } from "./utils/drawSlitScanToCanvas.js";
 import { drawVerticalSlitScanToCanvas } from "./utils/drawVerticalSlitScanToCanvas.js";
 import { getFlippedVideoCanvas } from "./utils/getFlippedVideoCanvas.js";
 
-// elements
+const allControls = [
+  {
+    name: "mountSize",
+    type: "Slider",
+    min: 0,
+    max: 1,
+    step: 0.01,
+    value: 0.4,
+  },
+];
+
+// app elements
+const appElement = document.querySelector("#app");
+const controls = document.querySelector("#controls");
+
+for (let c of allControls) {
+  let holdingDiv = document.createElement("div");
+  holdingDiv.classList = ["control"];
+
+  let labelElement = document.createElement("label");
+  labelElement.innerHTML = c.name + ":";
+
+  let inputElement = document.createElement("input");
+  inputElement.type = "range";
+  inputElement.min = c.min;
+  inputElement.max = c.max;
+  inputElement.step = c.step;
+  inputElement.value = c.defaultValue;
+
+  let valueElement = document.createElement("span");
+  valueElement.innerHTML = c.value;
+
+  holdingDiv.appendChild(labelElement);
+  holdingDiv.appendChild(inputElement);
+  holdingDiv.appendChild(valueElement);
+
+  controls.appendChild(holdingDiv);
+}
+
+// draw elements
 const artCanvas = document.querySelector("#artCanvas");
 const artCanvas2 = document.querySelector("#artCanvas2");
 const video = document.querySelector("#videoElement");
+// control elements
 const isReflectedCheckbox = document.querySelector("#isReflectedCheckbox");
 const isHorizontalCheckbox = document.querySelector("#isHorizontalCheckbox");
 const webcamAtStartCheckbox = document.querySelector("#webcamAtStartCheckbox");
 const sliceSizeSlider = document.querySelector("#sliceSizeSlider");
 const canvasSizeSlider = document.querySelector("#canvasSizeSlider");
 const msPerFrameSlider = document.querySelector("#msPerFrameSlider");
-const scanStartPos = document.querySelector("#scanStartPos");
+const scanStartPosSlider = document.querySelector("#scanStartPosSlider");
+// control value display elements
 const scanStartPosValue = document.querySelector("#scanStartPosValue");
 const isReflectedCheckboxValue = document.querySelector(
   "#isReflectedCheckboxValue"
@@ -28,13 +69,13 @@ const webcamAtStartCheckboxValue = document.querySelector(
 const canvasSizeSliderValue = document.querySelector("#canvasSizeSliderValue");
 
 // global defaults
-let sliceStartPos = 1;
+let scanStartPos = 1;
 let sliceSize = 1;
 let msPerFrame = 1;
 let lastDrawTime = null;
 let canvasSize = 320;
 let isReflected = false;
-let isHorizontal = true;
+let isHorizontal = false;
 let webcamAtStart = true;
 
 // set up controls, webcam etc
@@ -44,16 +85,18 @@ export function setup() {
 }
 
 function setupControls() {
-  // show defaults on controls
+  // set controls to show defaults
   isReflectedCheckbox.checked = isReflected;
   webcamAtStartCheckbox.checked = webcamAtStart;
   isHorizontalCheckbox.checked = isHorizontal;
   sliceSizeSlider.value = sliceSize;
   msPerFrameSlider.value = msPerFrame;
-  scanStartPos.value = sliceStartPos;
+  scanStartPosSlider.value = scanStartPos;
   canvasSizeSlider.value = canvasSize;
+  // controls.style.display = "none";
 
-  scanStartPosValue.innerHTML = sliceStartPos;
+  // update value elements to show default values
+  scanStartPosValue.innerHTML = scanStartPos;
   isReflectedCheckboxValue.innerHTML = isReflected;
   sliceSizeSliderValue.innerHTML = sliceSize;
   msPerFrameSliderValue.innerHTML = msPerFrame;
@@ -65,14 +108,26 @@ function setupControls() {
     ? "(is at start)"
     : "(is at end)";
 
-  // listeners
+  // control listeners
   isReflectedCheckbox.addEventListener("input", onIsReflectedCheckboxChange);
   isHorizontalCheckbox.addEventListener("input", isHorizontalCheckboxChange);
   webcamAtStartCheckbox.addEventListener("input", webcamAtStartCheckboxChange);
   sliceSizeSlider.addEventListener("input", onsliceSizeSliderChange);
   msPerFrameSlider.addEventListener("input", onMsPerFrameSliderChange);
-  scanStartPos.addEventListener("input", onscanStartPos);
+  scanStartPosSlider.addEventListener("input", onscanStartPos);
   canvasSizeSlider.addEventListener("input", onCanvasSizeSliderChange);
+
+  // hide controls if app is clicked
+  appElement.addEventListener("contextmenu", onAppRightClick);
+
+  function onAppRightClick(e) {
+    e.preventDefault();
+    if (controls.style.display === "none") {
+      controls.style.display = "inherit";
+    } else {
+      controls.style.display = "none";
+    }
+  }
 
   // functions
   function onCanvasSizeSliderChange(e) {
@@ -80,8 +135,8 @@ function setupControls() {
     canvasSizeSliderValue.innerHTML = canvasSize;
   }
   function onscanStartPos(e) {
-    sliceStartPos = e.target.value;
-    scanStartPosValue.innerHTML = sliceStartPos;
+    scanStartPos = e.target.value;
+    scanStartPosValue.innerHTML = scanStartPos;
   }
   function onIsReflectedCheckboxChange(e) {
     isReflected = e.target.checked;
@@ -175,7 +230,7 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice, webcamAtStart) {
     sliceSize,
     isReflected,
     drawSlice,
-    sliceStartPos,
+    scanStartPos,
     webcamAtStart,
   });
 }
@@ -197,7 +252,7 @@ function drawVerticalSlitScan(frameCanvas, drawSlice, webcamAtStart) {
     sliceSize,
     isReflected,
     drawSlice,
-    sliceStartPos,
+    scanStartPos,
     webcamAtStart,
   });
 }

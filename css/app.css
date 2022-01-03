@@ -17,13 +17,35 @@
     37.5px 75px 74.8px -4.1px hsl(var(--shadow-color) / 0.27);
 }
 
-#app {
+body {
+  background-color: hsl(0deg 0% 95%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: white;
+}
+
+#app {
+  border: inset 2px hsl(0deg, 0%, 80%);
+  position: relative;
+  /* border: 1px solid red; */
+  line-height: 0;
+}
+
+#overlay {
+  box-shadow: inset 0px 0px 10px 2px rgba(0, 0, 0, 0.9);
+  position: absolute;
+  min-width: 100%;
+  min-height: 100%;
+  line-height: 0;
+}
+
+canvas {
+  display: inline-block;
+  line-height: 0;
+  background-color: black;
 }
 
 #controls {
@@ -35,6 +57,8 @@
   padding: 10px;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 10px;
+  line-height: 1em;
+  line-height: 1.5em;
 }
 
 .control {
@@ -49,12 +73,6 @@
 
 .control span {
   margin-left: 10px;
-}
-
-canvas {
-  max-width: 95vw;
-  border-radius: 10px;
-  box-shadow: var(--shadow-elevation-high);
 }
 
 /* HIDE THE VIDEO */
