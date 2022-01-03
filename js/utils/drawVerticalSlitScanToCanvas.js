@@ -1,12 +1,10 @@
 export function drawVerticalSlitScanToCanvas({
   src,
   target,
-  sliceSize,
-  isReflected,
   drawSlice,
-  allControls,
+  params,
 }) {
-  const { webcamAtStart, scanStartPos } = allControls;
+  const { webcamAtStart, scanStartPos, isReflected, sliceSize } = params;
 
   const ctx = target.getContext("2d");
 
@@ -18,14 +16,14 @@ export function drawVerticalSlitScanToCanvas({
     ? drawLiveWebcamSection({
         src,
         target,
-        isReflected,
+        isReflected: isReflected.value,
         srcSectionH,
         targSectionH,
       })
     : drawLiveWebcamSectionAtEnd({
         src,
         target,
-        isReflected,
+        isReflected: isReflected.value,
         srcSectionH,
         targSectionH,
       });
@@ -33,8 +31,18 @@ export function drawVerticalSlitScanToCanvas({
   if (!drawSlice) return;
 
   webcamAtStart.value
-    ? drawSliceMovingDown({ ctx, target, targSectionH, sliceSize })
-    : drawSliceMovingUp({ ctx, target, targSectionH, sliceSize });
+    ? drawSliceMovingDown({
+        ctx,
+        target,
+        targSectionH,
+        sliceSize: sliceSize.value,
+      })
+    : drawSliceMovingUp({
+        ctx,
+        target,
+        targSectionH,
+        sliceSize: sliceSize.value,
+      });
 }
 
 function drawSliceMovingDown({ ctx, target, targSectionH, sliceSize }) {

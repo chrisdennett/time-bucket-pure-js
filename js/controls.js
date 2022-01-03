@@ -1,4 +1,25 @@
 const params = {
+  sliceSize: {
+    type: "slider",
+    min: 1,
+    max: 80,
+    step: 1,
+    value: 1,
+  },
+  msPerFrame: {
+    type: "slider",
+    min: 1,
+    max: 80,
+    step: 1,
+    value: 1,
+  },
+  canvasSize: {
+    type: "slider",
+    min: 50,
+    max: 800,
+    step: 1,
+    value: 320,
+  },
   scanStartPos: {
     type: "slider",
     min: 0.01,
@@ -18,6 +39,10 @@ const params = {
     value: true,
   },
   isHorizontal: {
+    type: "checkbox",
+    value: false,
+  },
+  isReflected: {
     type: "checkbox",
     value: false,
   },
