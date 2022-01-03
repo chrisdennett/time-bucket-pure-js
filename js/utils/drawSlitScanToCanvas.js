@@ -4,12 +4,13 @@ export function drawSlitScanToCanvas({
   sliceSize,
   isReflected,
   drawSlice,
-  scanStartPos,
-  webcamAtStart = true,
+  allControls,
 }) {
+  const { webcamAtStart, scanStartPos } = allControls;
+
   const ctx = target.getContext("2d");
 
-  const srcSectionW = scanStartPos * src.width;
+  const srcSectionW = scanStartPos.value * src.width;
   const scale = target.height / src.height;
   const targSectionW = srcSectionW * scale;
 
