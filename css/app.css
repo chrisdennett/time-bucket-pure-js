@@ -26,7 +26,9 @@ body {
   justify-content: center;
   color: white;
   overflow: hidden;
-  background-image: url("/img/noisy.png");
+  /* background-image: url("/img/noisy.png"); */
+  /* background-image: url("/img/groovepaper.png"); */
+  background-image: url("/img/rough-diagonal.png");
 }
 
 #app {
