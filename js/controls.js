@@ -30,9 +30,9 @@ const params = {
   mountSize: {
     type: "slider",
     min: 0,
-    max: 0.33,
+    max: 0.5,
     step: 0.01,
-    value: 0.1,
+    value: 0.3,
   },
   webcamAtStart: {
     type: "checkbox",
