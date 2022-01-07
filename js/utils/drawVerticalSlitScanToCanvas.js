@@ -7,6 +7,7 @@ export function drawVerticalSlitScanToCanvas({
   const { webcamAtStart, scanStartPos, isReflected, sliceSize } = params;
 
   const ctx = target.getContext("2d");
+  ctx.filter = "url(#turb)";
 
   const srcSectionH = scanStartPos.value * src.height;
   const scale = target.width / src.width;
