@@ -4,7 +4,7 @@ const params = {
     min: 1,
     max: 80,
     step: 1,
-    value: 1,
+    value: 22,
   },
   msPerFrame: {
     type: "slider",
@@ -25,7 +25,7 @@ const params = {
     min: 0.01,
     max: 1,
     step: 0.01,
-    value: 1,
+    value: 0.5,
   },
   mountSize: {
     type: "slider",
@@ -34,9 +34,10 @@ const params = {
     step: 0.01,
     value: 0.3,
   },
-  webcamAtStart: {
-    type: "checkbox",
-    value: true,
+  webcamPosition: {
+    type: "radio",
+    options: ["start", "middle", "end"],
+    value: "middle",
   },
   isHorizontal: {
     type: "checkbox",
@@ -57,10 +58,15 @@ export function initControls(controlsElement) {
 
     let labelElement = document.createElement("label");
     labelElement.innerHTML = key + ":";
+    labelElement.classList = ["controlLabel"];
 
-    let inputElement = document.createElement("input");
+    // arr so can extra elements - e.g. for radio butt options
+    let inputElements = [];
+    let displayCurrentValue = true;
+    let valueElement = document.createElement("span");
 
     if (c.type === "slider") {
+      let inputElement = document.createElement("input");
       inputElement.type = "range";
       inputElement.min = c.min;
       inputElement.max = c.max;
@@ -71,21 +77,53 @@ export function initControls(controlsElement) {
         c.value = e.target.value;
         valueElement.innerHTML = c.value;
       });
+      inputElements.push(inputElement);
+      //
     } else if (c.type === "checkbox") {
+      let inputElement = document.createElement("input");
       inputElement.type = "checkbox";
       inputElement.checked = c.value;
       inputElement.addEventListener("input", (e) => {
         c.value = e.target.checked;
         valueElement.innerHTML = c.value;
       });
+      inputElements.push(inputElement);
+      //
+    } else if (c.type === "radio") {
+      displayCurrentValue = false;
+      for (let i = 0; i < c.options.length; i++) {
+        let inputElement = document.createElement("input");
+        inputElement.type = "radio";
+        inputElement.id = c.options[i];
+        inputElement.value = c.options[i];
+        inputElement.name = key;
+        inputElement.checked = c.value === c.options[i];
+        inputElement.setAttribute("data-index", i);
+        inputElements.push(inputElement);
+        let label = document.createElement("label");
+        label.setAttribute("for", c.options[i]);
+        label.innerHTML = c.options[i];
+        inputElements.push(label);
+
+        inputElement.addEventListener("input", (e) => {
+          c.value = e.target.value;
+        });
+      }
     }
 
-    let valueElement = document.createElement("span");
-    valueElement.innerHTML = c.value;
+    if (inputElements.length === 0) {
+      return;
+    }
 
     holdingDiv.appendChild(labelElement);
-    holdingDiv.appendChild(inputElement);
-    holdingDiv.appendChild(valueElement);
+    for (let el of inputElements) {
+      holdingDiv.appendChild(el);
+    }
+
+    if (displayCurrentValue) {
+      valueElement.innerHTML = c.value;
+      holdingDiv.appendChild(valueElement);
+    }
 
     controlsElement.appendChild(holdingDiv);
   }

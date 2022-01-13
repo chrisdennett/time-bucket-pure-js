@@ -1,5 +1,5 @@
 export function drawSlitScanToCanvas({ src, target, drawSlice, params }) {
-  const { webcamAtStart, scanStartPos, isReflected, sliceSize } = params;
+  const { webcamPosition, scanStartPos, isReflected, sliceSize } = params;
 
   const ctx = target.getContext("2d");
 
@@ -7,37 +7,43 @@ export function drawSlitScanToCanvas({ src, target, drawSlice, params }) {
   const scale = target.height / src.height;
   const targSectionW = srcSectionW * scale;
 
-  webcamAtStart.value
-    ? drawLiveWebcamSection({
-        src,
-        target,
-        isReflected: isReflected.value,
-        srcSectionW,
-        targSectionW,
-      })
-    : drawLiveWebcamSectionAtEnd({
-        src,
-        target,
-        isReflected: isReflected.value,
-        srcSectionW,
-        targSectionW,
-      });
+  if (webcamPosition.value === "start") {
+    drawLiveWebcamSection({
+      src,
+      target,
+      isReflected: isReflected.value,
+      srcSectionW,
+      targSectionW,
+    });
+    // } else if (webcamPosition.value === "middle") {
+  } else {
+    drawLiveWebcamSectionAtEnd({
+      src,
+      target,
+      isReflected: isReflected.value,
+      srcSectionW,
+      targSectionW,
+    });
+  }
 
   if (!drawSlice) return;
 
-  webcamAtStart.value
-    ? drawSliceMovingRight({
-        ctx,
-        target,
-        targSectionW,
-        sliceSize: sliceSize.value,
-      })
-    : drawSliceMovingLeft({
-        ctx,
-        target,
-        targSectionW,
-        sliceSize: sliceSize.value,
-      });
+  if (webcamPosition.value === "start") {
+    drawSliceMovingRight({
+      ctx,
+      target,
+      targSectionW,
+      sliceSize: sliceSize.value,
+    });
+    // } else if (webcamPosition.value === "middle") {
+  } else {
+    drawSliceMovingLeft({
+      ctx,
+      target,
+      targSectionW,
+      sliceSize: sliceSize.value,
+    });
+  }
 }
 
 function drawSliceMovingRight({ ctx, target, targSectionW, sliceSize }) {

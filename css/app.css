@@ -80,9 +80,13 @@ canvas {
   align-items: center;
 }
 
-.control label {
+.controlLabel {
   display: inline-block;
   width: 140px;
+}
+
+.control label {
+  margin-right: 5px;
 }
 
 .control span {
