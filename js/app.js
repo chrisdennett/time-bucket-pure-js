@@ -1,4 +1,4 @@
-import { drawSlitScanToCanvas } from "./utils/drawSlitScanToCanvas.js";
+import { drawHorizontalSlitScanToCanvas } from "./utils/drawHorizontalSlitScanToCanvas.js";
 import { drawVerticalSlitScanToCanvas } from "./utils/drawVerticalSlitScanToCanvas.js";
 import { getFlippedVideoCanvas } from "./utils/getFlippedVideoCanvas.js";
 import { initControls } from "./controls.js";
@@ -93,7 +93,7 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice, params) {
     artCanvas.width = canvasWidth;
   }
 
-  drawSlitScanToCanvas({
+  drawHorizontalSlitScanToCanvas({
     src: frameCanvas,
     target: artCanvas,
     drawSlice,

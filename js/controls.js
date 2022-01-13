@@ -37,11 +37,11 @@ const params = {
   webcamPosition: {
     type: "radio",
     options: ["start", "middle", "end"],
-    value: "middle",
+    value: "end",
   },
   isHorizontal: {
     type: "checkbox",
-    value: false,
+    value: true,
   },
   isReflected: {
     type: "checkbox",

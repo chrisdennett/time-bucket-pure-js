@@ -5,22 +5,22 @@ export function drawVerticalSlitScanToCanvas({
   params,
 }) {
   const { webcamPosition, scanStartPos, isReflected, sliceSize } = params;
-  const slideSizeInt = parseInt(sliceSize.value);
+  const sliceSizeInt = parseInt(sliceSize.value);
 
   const ctx = target.getContext("2d");
   ctx.filter = "url(#turb)";
 
   const srcSectionH = scanStartPos.value * src.height;
   const scale = target.width / src.width;
-  const targSectionH = srcSectionH * scale;
+  const liveWebcamSectionH = srcSectionH * scale;
 
   if (webcamPosition.value === "start") {
-    drawLiveWebcamSection({
+    drawLiveWebcamSectionAtStart({
       src,
       target,
       isReflected: isReflected.value,
       srcSectionH,
-      targSectionH,
+      liveWebcamSectionH,
     });
   } else if (webcamPosition.value === "middle") {
     // ctx.fillRect(0, 0, target.width, target.height);
@@ -29,7 +29,7 @@ export function drawVerticalSlitScanToCanvas({
       target,
       isReflected: isReflected.value,
       srcSectionH,
-      targSectionH,
+      liveWebcamSectionH,
     });
   } else {
     drawLiveWebcamSectionAtEnd({
@@ -37,7 +37,7 @@ export function drawVerticalSlitScanToCanvas({
       target,
       isReflected: isReflected.value,
       srcSectionH,
-      targSectionH,
+      liveWebcamSectionH,
     });
   }
 
@@ -47,38 +47,87 @@ export function drawVerticalSlitScanToCanvas({
     drawSliceMovingDown({
       ctx,
       target,
-      targSectionH,
-      sliceSize: slideSizeInt,
+      liveWebcamSectionH,
+      sliceSize: sliceSizeInt,
     });
   } else if (webcamPosition.value === "middle") {
     drawSliceMovingAwayFromMiddle({
       ctx,
       target,
-      targSectionH,
-      sliceSize: slideSizeInt,
+      liveWebcamSectionH,
+      sliceSize: sliceSizeInt,
     });
   } else {
     drawSliceMovingUp({
       ctx,
       target,
-      targSectionH,
-      sliceSize: slideSizeInt,
+      liveWebcamSectionH,
+      sliceSize: sliceSizeInt,
     });
   }
 }
 
-function drawSliceMovingDown({ ctx, target, targSectionH, sliceSize }) {
-  const heightToShiftDown = target.height - targSectionH + sliceSize;
+//
+// AT TOP MOVING DOWN
+//
+function drawLiveWebcamSectionAtStart({
+  target,
+  src,
+  isReflected,
+  srcSectionH,
+  liveWebcamSectionH,
+}) {
+  const ctx = target.getContext("2d");
+
+  // draw live webcam portion of screen
+  const source = { x: 0, y: 0, w: src.width, h: srcSectionH };
+  const dest = { x: 0, y: 0, w: target.width, h: liveWebcamSectionH };
+  ctx.drawImage(
+    src,
+    source.x,
+    source.y,
+    source.w,
+    source.h,
+    dest.x,
+    dest.y,
+    dest.w,
+    dest.h
+  );
+
+  // draw the left to the right, but flipped
+  if (isReflected) {
+    const halfW = dest.w / 2;
+
+    ctx.save();
+    ctx.translate(halfW * 2, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(
+      target,
+      dest.x,
+      dest.y,
+      dest.w / 2,
+      dest.h,
+      dest.x,
+      dest.y,
+      halfW,
+      dest.h
+    );
+    ctx.restore();
+  }
+}
+function drawSliceMovingDown({ ctx, target, liveWebcamSectionH, sliceSize }) {
+  const heightAfterWebcam = target.height - liveWebcamSectionH;
+  const heightToShiftDown = heightAfterWebcam + sliceSize;
 
   const from = {
     x: 0,
-    y: targSectionH - sliceSize,
+    y: liveWebcamSectionH - sliceSize,
     w: target.width,
     h: heightToShiftDown,
   };
   const to = {
     x: 0,
-    y: targSectionH,
+    y: liveWebcamSectionH,
     w: target.width,
     h: heightToShiftDown,
   };
@@ -86,9 +135,67 @@ function drawSliceMovingDown({ ctx, target, targSectionH, sliceSize }) {
   ctx.drawImage(target, from.x, from.y, from.w, from.h, to.x, to.y, to.w, to.h);
 }
 
-function drawSliceMovingUp({ ctx, target, targSectionH, sliceSize }) {
-  // TODO: Figure out why this works
-  const heightToShiftUp = target.height + (sliceSize - targSectionH);
+//
+// AT BOTTOM MOVING UP
+//
+function drawLiveWebcamSectionAtEnd({
+  target,
+  src,
+  isReflected,
+  srcSectionH,
+  liveWebcamSectionH,
+}) {
+  const ctx = target.getContext("2d");
+
+  // draw live webcam portion of screen
+  const source = {
+    x: 0,
+    y: src.height - srcSectionH,
+    w: src.width,
+    h: srcSectionH,
+  };
+  const dest = {
+    x: 0,
+    y: target.height - liveWebcamSectionH,
+    w: target.width,
+    h: liveWebcamSectionH,
+  };
+  ctx.drawImage(
+    src,
+    source.x,
+    source.y,
+    source.w,
+    source.h,
+    dest.x,
+    dest.y,
+    dest.w,
+    dest.h
+  );
+
+  // draw the left to the right, but flipped
+  if (isReflected) {
+    const halfW = dest.w / 2;
+
+    ctx.save();
+    ctx.translate(halfW * 2, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(
+      target,
+      dest.x,
+      dest.y,
+      dest.w / 2,
+      dest.h,
+      dest.x,
+      dest.y,
+      halfW,
+      dest.h
+    );
+    ctx.restore();
+  }
+}
+function drawSliceMovingUp({ ctx, target, liveWebcamSectionH, sliceSize }) {
+  const liveWebCamTop = target.height - liveWebcamSectionH;
+  const heightToShiftUp = liveWebCamTop + sliceSize;
 
   const from = {
     x: 0,
@@ -106,152 +213,19 @@ function drawSliceMovingUp({ ctx, target, targSectionH, sliceSize }) {
   ctx.drawImage(target, from.x, from.y, from.w, from.h, to.x, to.y, to.w, to.h);
 }
 
-function drawLiveWebcamSection({
-  target,
-  src,
-  isReflected,
-  srcSectionH,
-  targSectionH,
-}) {
-  const ctx = target.getContext("2d");
-
-  // draw live webcam portion of screen
-  const source = { x: 0, y: 0, w: src.width, h: srcSectionH };
-  const dest = { x: 0, y: 0, w: target.width, h: targSectionH };
-  ctx.drawImage(
-    src,
-    source.x,
-    source.y,
-    source.w,
-    source.h,
-    dest.x,
-    dest.y,
-    dest.w,
-    dest.h
-  );
-
-  // improve the colours by redrawing it
-  //   ctx.save();
-  //   ctx.globalCompositeOperation = "multiply";
-  //   ctx.globalAlpha = 0.7;
-  //   ctx.drawImage(
-  //     src,
-  //     source.x,
-  //     source.y,
-  //     source.w,
-  //     source.h,
-  //     dest.x,
-  //     dest.y,
-  //     dest.w,
-  //     dest.h
-  //   );
-  //   ctx.restore();
-
-  // draw the left to the right, but flipped
-  if (isReflected) {
-    const halfW = dest.w / 2;
-
-    ctx.save();
-    ctx.translate(halfW * 2, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(
-      target,
-      dest.x,
-      dest.y,
-      dest.w / 2,
-      dest.h,
-      dest.x,
-      dest.y,
-      halfW,
-      dest.h
-    );
-    ctx.restore();
-  }
-}
-
-function drawLiveWebcamSectionAtEnd({
-  target,
-  src,
-  isReflected,
-  srcSectionH,
-  targSectionH,
-}) {
-  const ctx = target.getContext("2d");
-
-  // draw live webcam portion of screen
-  const source = {
-    x: 0,
-    y: src.height - srcSectionH,
-    w: src.width,
-    h: srcSectionH,
-  };
-  const dest = {
-    x: 0,
-    y: target.height - targSectionH,
-    w: target.width,
-    h: targSectionH,
-  };
-  ctx.drawImage(
-    src,
-    source.x,
-    source.y,
-    source.w,
-    source.h,
-    dest.x,
-    dest.y,
-    dest.w,
-    dest.h
-  );
-
-  // improve the colours by redrawing it
-  //   ctx.save();
-  //   ctx.globalCompositeOperation = "multiply";
-  //   ctx.globalAlpha = 0.7;
-  //   ctx.drawImage(
-  //     src,
-  //     source.x,
-  //     source.y,
-  //     source.w,
-  //     source.h,
-  //     dest.x,
-  //     dest.y,
-  //     dest.w,
-  //     dest.h
-  //   );
-  //   ctx.restore();
-
-  // draw the left to the right, but flipped
-  if (isReflected) {
-    const halfW = dest.w / 2;
-
-    ctx.save();
-    ctx.translate(halfW * 2, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(
-      target,
-      dest.x,
-      dest.y,
-      dest.w / 2,
-      dest.h,
-      dest.x,
-      dest.y,
-      halfW,
-      dest.h
-    );
-    ctx.restore();
-  }
-}
-
+//
+// IN MIDDLE MOVING UP and DOWN
+//
 function drawLiveWebcamSectionInMiddle({
   target,
   src,
   isReflected,
   srcSectionH,
-  targSectionH,
+  liveWebcamSectionH,
 }) {
   const ctx = target.getContext("2d");
   const targMiddle = target.height / 2;
-  const halfSection = targSectionH / 2;
+  const halfSection = liveWebcamSectionH / 2;
   const targY = targMiddle - halfSection;
 
   // remove from top and bottom when cropping source
@@ -270,7 +244,7 @@ function drawLiveWebcamSectionInMiddle({
     x: 0,
     y: targY,
     w: target.width,
-    h: targSectionH,
+    h: liveWebcamSectionH,
   };
   ctx.drawImage(
     src,
@@ -309,11 +283,12 @@ function drawLiveWebcamSectionInMiddle({
 function drawSliceMovingAwayFromMiddle({
   ctx,
   target,
-  targSectionH,
+  liveWebcamSectionH,
   sliceSize,
 }) {
+  // moving up
   const middleY = target.height / 2;
-  const halfSectionH = targSectionH / 2;
+  const halfSectionH = liveWebcamSectionH / 2;
   const topOfSection = middleY - halfSectionH;
   const heightToShiftUp = topOfSection + sliceSize;
 
