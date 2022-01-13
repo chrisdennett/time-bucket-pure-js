@@ -20,7 +20,7 @@ let lastDrawTime = null;
 export function setup() {
   // hide controls by default and if app is right clicked
   appElement.addEventListener("contextmenu", onAppRightClick);
-  // controls.style.display = "none";
+  controls.style.display = "none";
 
   function onAppRightClick(e) {
     e.preventDefault();

@@ -4,7 +4,7 @@ const params = {
     min: 1,
     max: 80,
     step: 1,
-    value: 22,
+    value: 1,
   },
   msPerFrame: {
     type: "slider",
@@ -25,7 +25,7 @@ const params = {
     min: 0.01,
     max: 1,
     step: 0.01,
-    value: 0.5,
+    value: 0.6,
   },
   mountSize: {
     type: "slider",
