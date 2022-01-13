@@ -93,23 +93,6 @@ function drawLiveWebcamSectionAtStart({
     dest.h
   );
 
-  // improve the colours by redrawing it
-  // ctx.save();
-  // ctx.globalCompositeOperation = "multiply";
-  // ctx.globalAlpha = 0.7;
-  // ctx.drawImage(
-  //   src,
-  //   source.x,
-  //   source.y,
-  //   source.w,
-  //   source.h,
-  //   dest.x,
-  //   dest.y,
-  //   dest.w,
-  //   dest.h
-  // );
-  // ctx.restore();
-
   // draw the top to the bottom, but flipped
   if (isReflected) {
     const halfH = dest.h / 2;
@@ -323,13 +306,13 @@ function drawSliceMovingAwayFromMiddle({
   const leftOfSection = middleX - halfSectionW;
   const widthToShiftLeft = leftOfSection + sliceSize;
 
-  const from = {
+  let from = {
     x: 0,
     y: 0,
     w: widthToShiftLeft,
     h: target.height,
   };
-  const to = {
+  let to = {
     x: -sliceSize,
     y: 0,
     w: widthToShiftLeft,
@@ -337,4 +320,42 @@ function drawSliceMovingAwayFromMiddle({
   };
 
   ctx.drawImage(target, from.x, from.y, from.w, from.h, to.x, to.y, to.w, to.h);
+
+  // shifting right
+  const rightOfSection = middleX + halfSectionW;
+  const widthToShiftRight = rightOfSection - sliceSize;
+
+  from = {
+    x: rightOfSection - sliceSize,
+    y: 0,
+    w: widthToShiftRight,
+    h: target.height,
+  };
+  to = {
+    x: rightOfSection,
+    y: 0,
+    w: widthToShiftRight,
+    h: target.height,
+  };
+
+  ctx.drawImage(target, from.x, from.y, from.w, from.h, to.x, to.y, to.w, to.h);
 }
+
+// REMOVED TO SPEED UP ON THE PI
+//
+// improve the colours by redrawing it
+// ctx.save();
+// ctx.globalCompositeOperation = "multiply";
+// ctx.globalAlpha = 0.7;
+// ctx.drawImage(
+//   src,
+//   source.x,
+//   source.y,
+//   source.w,
+//   source.h,
+//   dest.x,
+//   dest.y,
+//   dest.w,
+//   dest.h
+// );
+// ctx.restore();
