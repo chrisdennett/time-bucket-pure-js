@@ -3,6 +3,8 @@ export function drawVerticalSlitScanToCanvas({
   target,
   drawSlice,
   params,
+  osc,
+  soundObjects,
 }) {
   const { webcamPosition, scanStartPos, isReflected, sliceSize } = params;
   const sliceSizeInt = parseInt(sliceSize.value);
@@ -63,6 +65,8 @@ export function drawVerticalSlitScanToCanvas({
       target,
       liveWebcamSectionH,
       sliceSize: sliceSizeInt,
+      osc,
+      soundObjects,
     });
   }
 }
@@ -78,6 +82,8 @@ function drawLiveWebcamSectionAtStart({
   liveWebcamSectionH,
 }) {
   const ctx = target.getContext("2d");
+
+  console.log("soundStarted: ", soundStarted);
 
   // draw live webcam portion of screen
   const source = { x: 0, y: 0, w: src.width, h: srcSectionH };
@@ -193,9 +199,52 @@ function drawLiveWebcamSectionAtEnd({
     ctx.restore();
   }
 }
-function drawSliceMovingUp({ ctx, target, liveWebcamSectionH, sliceSize }) {
+function drawSliceMovingUp({
+  ctx,
+  target,
+  liveWebcamSectionH,
+  sliceSize,
+  osc,
+  soundObjects,
+}) {
   const liveWebCamTop = target.height - liveWebcamSectionH;
   const heightToShiftUp = liveWebCamTop + sliceSize;
+
+  // var myImageData = ctx.getImageData(left, top, width, height);
+  const canvasData = ctx.getImageData(0, liveWebCamTop + 1, target.width, 1);
+  const pixelData = canvasData.data;
+  let totals = { r: 0, g: 0, b: 0 };
+  for (var i = 0; i < pixelData.length; i += 4) {
+    const r = pixelData[i];
+    const g = pixelData[i + 1];
+    const b = pixelData[i + 2];
+    totals.r += r;
+    totals.g += g;
+    totals.b += b;
+  }
+
+  const avgR = totals.r / target.width;
+  const avgG = totals.g / target.width;
+  const avgB = totals.b / target.width;
+  const avgColour = (avgR + avgG + avgB) / 3;
+
+  if (soundObjects && soundObjects.length > 0) {
+    // map avgColour to an index of soundObjects to get the right note
+    const noteIndexDecimal = map(avgColour, 0, 255, 0, soundObjects.length);
+    // console.log("noteIndexDecimal: ", noteIndexDecimal);
+    const { synth, note } = soundObjects[Math.round(noteIndexDecimal)];
+    synth.triggerAttackRelease(note, 1);
+  }
+
+  if (osc) {
+    const freqMin = 130;
+    const freqMax = 300;
+    const freqRang = freqMax - freqMin;
+    const avgColourFraction = avgColour / 255;
+    const freq = freqMin + avgColourFraction * freqRang;
+
+    osc.frequency.value = freq; //avgR * 2;
+  }
 
   const from = {
     x: 0,
@@ -211,6 +260,10 @@ function drawSliceMovingUp({ ctx, target, liveWebcamSectionH, sliceSize }) {
   };
 
   ctx.drawImage(target, from.x, from.y, from.w, from.h, to.x, to.y, to.w, to.h);
+}
+
+function map(val, in_min, in_max, out_min, out_max) {
+  return ((val - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 }
 
 //

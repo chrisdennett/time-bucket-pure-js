@@ -1,7 +1,7 @@
 import { drawHorizontalSlitScanToCanvas } from "./utils/drawHorizontalSlitScanToCanvas.js";
 import { drawVerticalSlitScanToCanvas } from "./utils/drawVerticalSlitScanToCanvas.js";
 import { getFlippedVideoCanvas } from "./utils/getFlippedVideoCanvas.js";
-import { initControls } from "./controls.js";
+import { globalState, initControls } from "./controls.js";
 
 // app elements
 const appElement = document.querySelector("#app");
@@ -15,12 +15,28 @@ const params = initControls(controls);
 
 // global defaults
 let lastDrawTime = null;
+let osc;
+let masterVolume = -9; // in decibel.
+let scale;
+let mixer;
+let soundObjects = [];
+
+function onKeyDown(e) {
+  const noteIndex = parseInt(e.key);
+  console.log("noteIndex: ", noteIndex);
+
+  const { synth, note } = soundObjects[noteIndex];
+  synth.triggerAttackRelease(note, 1);
+}
 
 // set up controls, webcam etc
 export function setup() {
   // hide controls by default and if app is right clicked
   appElement.addEventListener("contextmenu", onAppRightClick);
-  controls.style.display = "none";
+  // controls.style.display = "none";
+
+  // keyboard controls
+  document.addEventListener("keydown", onKeyDown);
 
   function onAppRightClick(e) {
     e.preventDefault();
@@ -47,7 +63,18 @@ export function setup() {
 
 // draw loop
 export function draw() {
-  const { isHorizontal, msPerFrame } = params;
+  const { isHorizontal, msPerFrame, soundOn } = params;
+
+  if (!globalState.soundStarted && soundOn.value) {
+    globalState.soundStarted = true;
+    initializeAudio();
+    // osc = new Tone.Oscillator(150, "sine").toDestination().start();
+  } else if (globalState.soundStarted && !soundOn.value) {
+    // osc.stop();
+    // osc.dispose();
+    // osc = null;
+    // globalState.soundStarted = false;
+  }
 
   const timeStamp = Date.now();
 
@@ -69,7 +96,7 @@ export function draw() {
       artCanvas.style.display = "inherit";
     }
   } else {
-    drawVerticalSlitScan(frameCanvas, drawSlice, params);
+    drawVerticalSlitScan(frameCanvas, drawSlice, params, osc, soundObjects);
     if (artCanvas.style.display !== "none") {
       artCanvas.style.display = "none";
     }
@@ -79,6 +106,50 @@ export function draw() {
   }
 
   window.requestAnimationFrame(draw);
+}
+
+function initializeAudio() {
+  Tone.Master.volume.value = masterVolume;
+
+  mixer = new Tone.Gain();
+
+  let reverb = new Tone.Reverb({
+    wet: 0.5, // half dry, half wet mix
+    decay: 10, // decay time in seconds
+  });
+
+  // setup the audio chain:
+  // mixer -> reverb -> Tone.Master
+  // note that the synth object inside each pendulum get
+  // connected to the mixer, so our final chain will look like:
+  // synth(s) -> mixer -> reverb -> Tone.Master
+  mixer.connect(reverb);
+  reverb.toDestination();
+
+  // quick way to get more notes: just glue 3 scales together
+  // other 'flavours' to try:
+  // major
+  // minor
+  // major pentatonic
+  // the modes (eg: dorian, phrygian, etc..)
+  // look at Tonal.ScaleType.names() to see a list of all supported
+  // names
+
+  let flavour = "minor pentatonic";
+  scale = Tonal.Scale.get("C3 " + flavour).notes;
+  scale = scale.concat(Tonal.Scale.get("C4 " + flavour).notes);
+  scale = scale.concat(Tonal.Scale.get("C5 " + flavour).notes);
+
+  // optional but fun: shuffle the scale array to mixup the notes
+  Tonal.Collection.shuffle(scale);
+
+  // create as many pendulums as we have notes in the scale[] array
+  for (let i = 0; i < scale.length; i++) {
+    let synth = new Tone.Synth();
+    synth.connect(mixer);
+
+    soundObjects.push({ synth, note: scale[i] });
+  }
 }
 
 function drawHorizontalSlitScan(frameCanvas, drawSlice, params) {
@@ -101,7 +172,13 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice, params) {
   });
 }
 
-function drawVerticalSlitScan(frameCanvas, drawSlice, params) {
+function drawVerticalSlitScan(
+  frameCanvas,
+  drawSlice,
+  params,
+  osc,
+  soundObjects
+) {
   const { canvasSize, mountSize } = params;
   const fullHeight = document.body.clientHeight;
   let padding = mountSize.value * fullHeight;
@@ -122,5 +199,7 @@ function drawVerticalSlitScan(frameCanvas, drawSlice, params) {
     target: artCanvas2,
     drawSlice,
     params,
+    osc,
+    soundObjects,
   });
 }

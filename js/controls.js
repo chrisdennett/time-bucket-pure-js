@@ -1,3 +1,6 @@
+// global
+export const globalState = { soundStarted: false };
+
 const params = {
   sliceSize: {
     type: "slider",
@@ -25,7 +28,7 @@ const params = {
     min: 0.01,
     max: 1,
     step: 0.01,
-    value: 0.6,
+    value: 0.8,
   },
   mountSize: {
     type: "slider",
@@ -37,13 +40,17 @@ const params = {
   webcamPosition: {
     type: "radio",
     options: ["start", "middle", "end"],
-    value: "middle",
+    value: "end",
   },
   isHorizontal: {
     type: "checkbox",
     value: false,
   },
   isReflected: {
+    type: "checkbox",
+    value: false,
+  },
+  soundOn: {
     type: "checkbox",
     value: false,
   },
