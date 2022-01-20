@@ -137,8 +137,8 @@ function initializeAudio() {
   // names
 
   // let flavour = "egyptian";
-  let flavour = "minor pentatonic";
-  // let flavour = "major pentatonic";
+  // let flavour = "minor pentatonic";
+  let flavour = "major pentatonic";
   scale = Tonal.Scale.get("C3 " + flavour).notes;
   scale = scale.concat(Tonal.Scale.get("C4 " + flavour).notes);
   // scale = scale.concat(Tonal.Scale.get("C5 " + flavour).notes);

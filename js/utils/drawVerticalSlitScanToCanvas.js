@@ -216,9 +216,9 @@ function getAvgColour(pixelData, startIndex, endIndex) {
   const avgR = totals.r / totalPixels;
   const avgG = totals.g / totalPixels;
   const avgB = totals.b / totalPixels;
-  const avgColour = (avgR + avgG + avgB) / 3;
+  // const avgColour = (avgR + avgG + avgB) / 3;
 
-  return avgColour;
+  return { r: avgR, g: avgG, b: avgB };
 }
 
 function drawSliceMovingUp({
@@ -231,35 +231,6 @@ function drawSliceMovingUp({
 }) {
   const liveWebCamTop = target.height - liveWebcamSectionH;
   const heightToShiftUp = liveWebCamTop + sliceSize;
-
-  if (soundOn.value && soundObjects && soundObjects.length > 0) {
-    const canvasData = ctx.getImageData(0, liveWebCamTop + 1, target.width, 1);
-    const pixelData = canvasData.data;
-
-    const pixelsPerNote = target.width / soundObjects.length;
-
-    for (let s = 0; s < soundObjects.length; s++) {
-      const startIndex = s * pixelsPerNote;
-      const endIndex = startIndex + pixelsPerNote;
-      const avgColour = getAvgColour(pixelData, startIndex, endIndex);
-      const sObj = soundObjects[s];
-
-      const diff = Math.abs(sObj.prevTriggerValue - avgColour);
-      sObj.prevTriggerValue = avgColour;
-
-      if (sObj.delayRetrigger > 0) {
-        sObj.delayRetrigger -= 0.1;
-      }
-
-      if (diff > 5) {
-        if (sObj.delayRetrigger <= 0) {
-          const { synth, note } = sObj;
-          synth.triggerAttackRelease(note, 1);
-          sObj.delayRetrigger = 10;
-        }
-      }
-    }
-  }
 
   const from = {
     x: 0,
@@ -275,6 +246,59 @@ function drawSliceMovingUp({
   };
 
   ctx.drawImage(target, from.x, from.y, from.w, from.h, to.x, to.y, to.w, to.h);
+
+  if (soundOn.value && soundObjects && soundObjects.length > 0) {
+    const canvasData = ctx.getImageData(0, liveWebCamTop + 1, target.width, 1);
+    const pixelData = canvasData.data;
+
+    const pixelsPerNote = target.width / soundObjects.length;
+
+    for (let s = 0; s < soundObjects.length; s++) {
+      const startIndex = s * pixelsPerNote;
+      const endIndex = startIndex + pixelsPerNote;
+
+      const rgbAvgs = getAvgColour(pixelData, startIndex, endIndex);
+      const sObj = soundObjects[s];
+
+      ctx.fillStyle = `rgba(255, 0, 255, 0.5)`;
+      ctx.fillRect(startIndex, liveWebCamTop, 2, 10);
+
+      ctx.fillStyle = `rgba(0, 255, 255, 0.5)`;
+      ctx.fillRect(endIndex, liveWebCamTop, 2, 10);
+
+      // const diff = Math.abs(sObj.prevTriggerValue - avgColour);
+
+      const threshold = 40 / soundObjects.length;
+
+      const doTriggerNote = isChangedEnoughToBeTriggered(
+        sObj.prevTriggerValue,
+        rgbAvgs,
+        threshold
+      );
+
+      sObj.prevTriggerValue = rgbAvgs;
+
+      if (sObj.delayRetrigger > 0) {
+        sObj.delayRetrigger -= 0.1;
+      }
+
+      if (doTriggerNote) {
+        if (sObj.delayRetrigger <= 0) {
+          const { synth, note } = sObj;
+          synth.triggerAttackRelease(note, 1);
+          sObj.delayRetrigger = 2;
+        }
+      }
+    }
+  }
+}
+
+function isChangedEnoughToBeTriggered(prev, curr, threshold) {
+  const rDiff = Math.abs(curr.r - prev.r);
+  const gDiff = Math.abs(curr.g - prev.g);
+  const bDiff = Math.abs(curr.b - prev.b);
+
+  return rDiff > threshold || gDiff > threshold || bDiff > threshold;
 }
 
 // function map(val, in_min, in_max, out_min, out_max) {
