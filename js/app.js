@@ -15,19 +15,19 @@ const params = initControls(controls);
 
 // global defaults
 let lastDrawTime = null;
-let osc;
 let masterVolume = -9; // in decibel.
 let scale;
 let mixer;
+let reverb;
 let soundObjects = [];
 
-function onKeyDown(e) {
-  const noteIndex = parseInt(e.key);
-  console.log("noteIndex: ", noteIndex);
+// function onKeyDown(e) {
+//   const noteIndex = parseInt(e.key);
+//   console.log("noteIndex: ", noteIndex);
 
-  const { synth, note } = soundObjects[noteIndex];
-  synth.triggerAttackRelease(note, 1);
-}
+//   const { synth, note } = soundObjects[noteIndex];
+//   synth.triggerAttackRelease(note, 1);
+// }
 
 // set up controls, webcam etc
 export function setup() {
@@ -36,7 +36,7 @@ export function setup() {
   // controls.style.display = "none";
 
   // keyboard controls
-  document.addEventListener("keydown", onKeyDown);
+  // document.addEventListener("keydown", onKeyDown);
 
   function onAppRightClick(e) {
     e.preventDefault();
@@ -65,15 +65,10 @@ export function setup() {
 export function draw() {
   const { isHorizontal, msPerFrame, soundOn } = params;
 
+  // initialise sound if not done so already
   if (!globalState.soundStarted && soundOn.value) {
     globalState.soundStarted = true;
     initializeAudio();
-    // osc = new Tone.Oscillator(150, "sine").toDestination().start();
-  } else if (globalState.soundStarted && !soundOn.value) {
-    // osc.stop();
-    // osc.dispose();
-    // osc = null;
-    // globalState.soundStarted = false;
   }
 
   const timeStamp = Date.now();
@@ -96,7 +91,7 @@ export function draw() {
       artCanvas.style.display = "inherit";
     }
   } else {
-    drawVerticalSlitScan(frameCanvas, drawSlice, params, osc, soundObjects);
+    drawVerticalSlitScan(frameCanvas, drawSlice, params, soundObjects);
     if (artCanvas.style.display !== "none") {
       artCanvas.style.display = "none";
     }
@@ -108,12 +103,18 @@ export function draw() {
   window.requestAnimationFrame(draw);
 }
 
+// function clearAudio() {
+//   masterVolume = -9; // in decibel.
+//   mixer;
+//   soundObjects = [];
+// }
+
 function initializeAudio() {
-  Tone.Master.volume.value = masterVolume;
+  // Tone.Master.volume.value = masterVolume;
 
   mixer = new Tone.Gain();
 
-  let reverb = new Tone.Reverb({
+  reverb = new Tone.Reverb({
     wet: 0.5, // half dry, half wet mix
     decay: 10, // decay time in seconds
   });
@@ -135,20 +136,27 @@ function initializeAudio() {
   // look at Tonal.ScaleType.names() to see a list of all supported
   // names
 
+  // let flavour = "egyptian";
   let flavour = "minor pentatonic";
+  // let flavour = "major pentatonic";
   scale = Tonal.Scale.get("C3 " + flavour).notes;
   scale = scale.concat(Tonal.Scale.get("C4 " + flavour).notes);
-  scale = scale.concat(Tonal.Scale.get("C5 " + flavour).notes);
+  // scale = scale.concat(Tonal.Scale.get("C5 " + flavour).notes);
 
   // optional but fun: shuffle the scale array to mixup the notes
-  Tonal.Collection.shuffle(scale);
+  // Tonal.Collection.shuffle(scale);
 
   // create as many pendulums as we have notes in the scale[] array
   for (let i = 0; i < scale.length; i++) {
     let synth = new Tone.Synth();
     synth.connect(mixer);
 
-    soundObjects.push({ synth, note: scale[i] });
+    soundObjects.push({
+      synth,
+      note: scale[i],
+      prevTriggerValue: 0,
+      delayRetrigger: 0,
+    });
   }
 }
 
@@ -172,13 +180,7 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice, params) {
   });
 }
 
-function drawVerticalSlitScan(
-  frameCanvas,
-  drawSlice,
-  params,
-  osc,
-  soundObjects
-) {
+function drawVerticalSlitScan(frameCanvas, drawSlice, params, soundObjects) {
   const { canvasSize, mountSize } = params;
   const fullHeight = document.body.clientHeight;
   let padding = mountSize.value * fullHeight;
@@ -199,7 +201,6 @@ function drawVerticalSlitScan(
     target: artCanvas2,
     drawSlice,
     params,
-    osc,
     soundObjects,
   });
 }
