@@ -15,19 +15,10 @@ const params = initControls(controls);
 
 // global defaults
 let lastDrawTime = null;
-let masterVolume = -9; // in decibel.
 let scale;
 let mixer;
 let reverb;
 let soundObjects = [];
-
-// function onKeyDown(e) {
-//   const noteIndex = parseInt(e.key);
-//   console.log("noteIndex: ", noteIndex);
-
-//   const { synth, note } = soundObjects[noteIndex];
-//   synth.triggerAttackRelease(note, 1);
-// }
 
 // set up controls, webcam etc
 export function setup() {
@@ -102,12 +93,6 @@ export function draw() {
 
   window.requestAnimationFrame(draw);
 }
-
-// function clearAudio() {
-//   masterVolume = -9; // in decibel.
-//   mixer;
-//   soundObjects = [];
-// }
 
 function initializeAudio() {
   // Tone.Master.volume.value = masterVolume;

@@ -56,6 +56,37 @@ const params = {
   },
 };
 
+function debounce(func, timeout = 300) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}
+
+function addPhysicalControls(params) {
+  var socket = io();
+  socket.on(
+    "sliceSizeChange",
+    debounce((e) => {
+      const { min, max, value: currValue } = params.sliceSize;
+      const increment = e.value === "R" ? 1 : -1;
+      let newValue = currValue + increment;
+      if (newValue < min) newValue = min;
+      if (newValue > max) newValue = max;
+
+      params.sliceSize.value = newValue;
+    }, 50)
+  );
+
+  socket.on(
+    "toggleHorizontal",
+    debounce(() => (params.isReflected.value = !params.isReflected.value), 100)
+  );
+}
+
 export function initControls(controlsElement) {
   for (let key of Object.keys(params)) {
     const c = params[key];
@@ -134,6 +165,8 @@ export function initControls(controlsElement) {
 
     controlsElement.appendChild(holdingDiv);
   }
+
+  addPhysicalControls(params);
 
   return params;
 }
