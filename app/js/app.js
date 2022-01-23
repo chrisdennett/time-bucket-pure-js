@@ -24,7 +24,7 @@ let soundObjects = [];
 export function setup() {
   // hide controls by default and if app is right clicked
   appElement.addEventListener("contextmenu", onAppRightClick);
-  // controls.style.display = "none";
+  controls.style.display = "none";
 
   // keyboard controls
   // document.addEventListener("keydown", onKeyDown);

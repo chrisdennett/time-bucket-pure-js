@@ -16,7 +16,7 @@ server.listen(3000, () => {
 });
 
 const Gpio = require("onoff").Gpio;
-const button = new Gpio(4, "in", "none", { debounceTimout: 10 });
+const button = new Gpio(4, "in", "rising");
 
 const nodaryEncoder = require("nodary-encoder");
 const myEncoder = nodaryEncoder(18, 17); // Using GPIO17 & GPIO18
@@ -24,7 +24,7 @@ const myEncoder = nodaryEncoder(18, 17); // Using GPIO17 & GPIO18
 let prevValue = null;
 
 // button event
-button.watch((err, value) => io.emit("toggleHorizontal", { value: "do it" }));
+button.watch((err, value) => io.emit("isReflected", { value: value }));
 
 // turn event
 myEncoder.on("rotation", (direction, value) => {

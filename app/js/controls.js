@@ -82,8 +82,10 @@ function addPhysicalControls(params) {
   );
 
   socket.on(
-    "toggleHorizontal",
-    debounce(() => (params.isReflected.value = !params.isReflected.value), 100)
+    "isReflected",
+    debounce((e) => {
+      params.isReflected.value = !params.isReflected.value
+    }, 100)
   );
 }
 
