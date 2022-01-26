@@ -28,7 +28,7 @@ const params = {
     min: 0.01,
     max: 1,
     step: 0.01,
-    value: 0.8,
+    value: 0.6,
   },
   mountSize: {
     type: "slider",
