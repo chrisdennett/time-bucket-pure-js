@@ -8,26 +8,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.36/Tone.min.js" integrity="sha512-6EwXyUr/E8qXmKzIejsvIHRKKq+KFuQ4YvEJgXI9Ketvi2x5zMIIX5Y/v9OEKoZ9RuGYaOMI0UHRrsMEau+Kgw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
 
-    <main id="app">
+  <body>
+    <div id="container">
 
-      <!-- CONTROLS -->
-      <div id="controls"></div>
+      <main id="app">
 
-      <!-- overlay for shadow -->
-      <div id="textureOverlay" class="overlay"></div>
+        <!-- CONTROLS -->
+        <div id="controls"></div>
 
-      <!-- overlay for shadow -->
-      <div id="shadowOverlay" class="overlay"></div>
+        <!-- overlay for shadow -->
+        <div id="textureOverlay" class="overlay"></div>
 
-      <!-- VERTICAL CANVAS -->
-      <canvas id="artCanvas2"></canvas>
+        <!-- overlay for shadow -->
+        <div id="shadowOverlay" class="overlay"></div>
 
-      <!-- HORIZONTAL CANVAS -->
-      <canvas id="artCanvas"></canvas>
-      
-      <!-- WEB CAM (hidden) -->
-      <video autoplay="true" id="videoElement" width="320" height="240"></video>
-    </main>
+        <!-- VERTICAL CANVAS -->
+        <canvas id="artCanvas2"></canvas>
+
+        <!-- HORIZONTAL CANVAS -->
+        <canvas id="artCanvas"></canvas>
+        
+        <!-- WEB CAM (hidden) -->
+        <video autoplay="true" id="videoElement" width="320" height="240"></video>
+      </main>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="./js/index.js"></script>

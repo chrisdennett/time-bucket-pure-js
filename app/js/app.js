@@ -167,16 +167,21 @@ function drawHorizontalSlitScan(frameCanvas, drawSlice, params) {
 
 function drawVerticalSlitScan(frameCanvas, drawSlice, params, soundObjects) {
   const { canvasSize, mountSize } = params;
-  const fullHeight = document.body.clientHeight;
-  let padding = mountSize.value * fullHeight;
+  const topAdjust = 220;
+  const fullHeight = document.body.clientHeight - topAdjust;
+  let padding = parseFloat(mountSize.value) * fullHeight;
 
   if (!padding) padding = 0;
-  const canvasHeight = document.body.clientHeight - padding;
+  const canvasHeight = fullHeight - (padding + padding);
 
   if (
     artCanvas2.height !== parseInt(canvasHeight) ||
     artCanvas2.width !== parseInt(canvasSize.value)
   ) {
+    const container = document.getElementById("container");
+    container.style.position = "absolute";
+    container.style.top = topAdjust + "px";
+
     artCanvas2.height = canvasHeight;
     artCanvas2.width = canvasSize.value;
   }
