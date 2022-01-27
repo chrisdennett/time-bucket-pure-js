@@ -1,7 +1,7 @@
 // global
 export const globalState = { soundStarted: false };
 
-const params = {
+const defaultParams = {
   sliceSize: {
     type: "slider",
     min: 1,
@@ -40,7 +40,7 @@ const params = {
   webcamPosition: {
     type: "radio",
     options: ["start", "middle", "end"],
-    value: "end",
+    value: "middle",
   },
   isHorizontal: {
     type: "checkbox",
@@ -55,6 +55,7 @@ const params = {
     value: false,
   },
 };
+const params = JSON.parse(JSON.stringify(defaultParams));
 
 function debounce(func, timeout = 300) {
   let timer;
@@ -82,11 +83,41 @@ function addPhysicalControls(params) {
   );
 
   socket.on(
+    "webcamPositionChange",
+    debounce((e) => {
+      const { options, value: currValue } = params.webcamPosition;
+      const increment = e.value === "R" ? 1 : -1;
+      const currIndex = options.findIndex(opt => opt === currValue);
+      
+      let newIndex = currIndex + increment;
+      if (newIndex < 0) newIndex = options.length-1;
+      if (newIndex > options.length-1) newIndex = 0;
+
+      params.webcamPosition.value = options[newIndex];
+    }, 50)
+  );
+
+  socket.on(
     "isReflected",
     debounce((e) => {
       params.isReflected.value = !params.isReflected.value
     }, 100)
   );
+
+  socket.on(
+    "doReset",
+    debounce((e) => {
+      resetAllParams();
+    }, 100)
+  );
+}
+
+function resetAllParams(){
+  const keys = Object.keys(params);
+
+  for(let key of keys){
+    params[key].value = defaultParams[key].value;
+  }
 }
 
 export function initControls(controlsElement) {

@@ -27,7 +27,7 @@ let prevValue = null;
 
 // button event
 button.watch((err, value) => io.emit("isReflected", { value: value }));
-button2.watch((err, value) => io.emit("isReflected", { value: value }));
+button2.watch((err, value) => io.emit("doReset", { value: value }));
 
 // turn event
 myEncoder.on("rotation", (direction, value) => {
@@ -39,7 +39,7 @@ myEncoder.on("rotation", (direction, value) => {
 
 myEncoder2.on("rotation", (direction, value) => {
   if (value !== prevValue) {
-    io.emit("sliceSizeChange", { value: direction });
+    io.emit("webcamPositionChange", { value: direction });
     prevValue = value;
   }
 });
