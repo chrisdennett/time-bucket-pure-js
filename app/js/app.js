@@ -36,7 +36,7 @@ export function setup() {
   if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices
       .getUserMedia({
-        video: { width: 320, height: 240 },
+        video: { width: 1280, height: 720 },
       })
       .then(function (stream) {
         video.srcObject = stream;

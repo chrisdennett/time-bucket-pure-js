@@ -65,8 +65,7 @@ function drawLiveWebcamSectionInMiddle({
     h: liveWebcamSectionH,
   };
 
-  // draw the dest to itself 1 pixel bigger offset by one pixel
-
+  // draw the dest to itself 2 pixel wider and higher offset by one pixel each way
   ctx.drawImage(
     target,
     0,
