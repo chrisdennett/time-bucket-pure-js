@@ -15,31 +15,31 @@ server.listen(3000, () => {
   console.log("listening on *:3000");
 });
 
-const Gpio = require("onoff").Gpio;
-const button = new Gpio(4, "in", "rising");
-const button2 = new Gpio(24, "in", "rising");
+// const Gpio = require("onoff").Gpio;
+// const button = new Gpio(4, "in", "rising");
+// const button2 = new Gpio(24, "in", "rising");
 
-const nodaryEncoder = require("nodary-encoder");
-const myEncoder = nodaryEncoder(18, 17); // Using GPIO17 & GPIO18
-const myEncoder2 = nodaryEncoder(25, 23);
+// const nodaryEncoder = require("nodary-encoder");
+// const myEncoder = nodaryEncoder(18, 17); // Using GPIO17 & GPIO18
+// const myEncoder2 = nodaryEncoder(25, 23);
 
 let prevValue = null;
 
 // button event
-button.watch((err, value) => io.emit("isReflected", { value: value }));
-button2.watch((err, value) => io.emit("doReset", { value: value }));
+// button.watch((err, value) => io.emit("isReflected", { value: value }));
+// button2.watch((err, value) => io.emit("doReset", { value: value }));
 
 // turn event
-myEncoder.on("rotation", (direction, value) => {
-  if (value !== prevValue) {
-    io.emit("sliceSizeChange", { value: direction });
-    prevValue = value;
-  }
-});
+// myEncoder.on("rotation", (direction, value) => {
+//   if (value !== prevValue) {
+//     io.emit("sliceSizeChange", { value: direction });
+//     prevValue = value;
+//   }
+// });
 
-myEncoder2.on("rotation", (direction, value) => {
-  if (value !== prevValue) {
-    io.emit("webcamPositionChange", { value: direction });
-    prevValue = value;
-  }
-});
+// myEncoder2.on("rotation", (direction, value) => {
+//   if (value !== prevValue) {
+//     io.emit("webcamPositionChange", { value: direction });
+//     prevValue = value;
+//   }
+// });

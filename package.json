@@ -11,8 +11,6 @@
     "license": "ISC",
     "dependencies": {
       "express": "^4.17.2",
-      "nodary-encoder": "^0.1.4",
-      "onoff": "^6.0.3",
       "socket.io": "^4.4.1"
     }
   }

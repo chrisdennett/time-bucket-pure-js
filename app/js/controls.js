@@ -68,54 +68,48 @@ function debounce(func, timeout = 300) {
 }
 
 function addPhysicalControls(params) {
-  var socket = io();
-  socket.on(
-    "sliceSizeChange",
-    debounce((e) => {
-      const { min, max, value: currValue } = params.sliceSize;
-      const increment = e.value === "R" ? 1 : -1;
-      let newValue = currValue + increment;
-      if (newValue < min) newValue = min;
-      if (newValue > max) newValue = max;
-
-      params.sliceSize.value = newValue;
-    }, 50)
-  );
-
-  socket.on(
-    "webcamPositionChange",
-    debounce((e) => {
-      const { options, value: currValue } = params.webcamPosition;
-      const increment = e.value === "R" ? 1 : -1;
-      const currIndex = options.findIndex(opt => opt === currValue);
-      
-      let newIndex = currIndex + increment;
-      if (newIndex < 0) newIndex = options.length-1;
-      if (newIndex > options.length-1) newIndex = 0;
-
-      params.webcamPosition.value = options[newIndex];
-    }, 50)
-  );
-
-  socket.on(
-    "isReflected",
-    debounce((e) => {
-      params.isReflected.value = !params.isReflected.value
-    }, 100)
-  );
-
-  socket.on(
-    "doReset",
-    debounce((e) => {
-      resetAllParams();
-    }, 100)
-  );
+  // var socket = io();
+  // socket.on(
+  //   "sliceSizeChange",
+  //   debounce((e) => {
+  //     const { min, max, value: currValue } = params.sliceSize;
+  //     const increment = e.value === "R" ? 1 : -1;
+  //     let newValue = currValue + increment;
+  //     if (newValue < min) newValue = min;
+  //     if (newValue > max) newValue = max;
+  //     params.sliceSize.value = newValue;
+  //   }, 50)
+  // );
+  // socket.on(
+  //   "webcamPositionChange",
+  //   debounce((e) => {
+  //     const { options, value: currValue } = params.webcamPosition;
+  //     const increment = e.value === "R" ? 1 : -1;
+  //     const currIndex = options.findIndex(opt => opt === currValue);
+  //     let newIndex = currIndex + increment;
+  //     if (newIndex < 0) newIndex = options.length-1;
+  //     if (newIndex > options.length-1) newIndex = 0;
+  //     params.webcamPosition.value = options[newIndex];
+  //   }, 50)
+  // );
+  // socket.on(
+  //   "isReflected",
+  //   debounce((e) => {
+  //     params.isReflected.value = !params.isReflected.value
+  //   }, 100)
+  // );
+  // socket.on(
+  //   "doReset",
+  //   debounce((e) => {
+  //     resetAllParams();
+  //   }, 100)
+  // );
 }
 
-function resetAllParams(){
+function resetAllParams() {
   const keys = Object.keys(params);
 
-  for(let key of keys){
+  for (let key of keys) {
     params[key].value = defaultParams[key].value;
   }
 }
