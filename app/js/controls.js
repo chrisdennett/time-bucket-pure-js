@@ -7,7 +7,7 @@ const defaultParams = {
     min: 1,
     max: 80,
     step: 1,
-    value: 1,
+    value: 3,
   },
   msPerFrame: {
     type: "slider",
@@ -35,7 +35,7 @@ const defaultParams = {
     min: 0,
     max: 0.5,
     step: 0.001,
-    value: 0.01,
+    value: 0,
   },
   isReflected: {
     type: "checkbox",
