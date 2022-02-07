@@ -1,74 +1,27 @@
-export function drawVerticalSlitScanToCanvas({
-  src,
-  target,
-  drawSlice,
-  params,
-  soundObjects,
-}) {
-  const { webcamPosition, scanStartPos, isReflected, sliceSize, soundOn } =
-    params;
+export function drawRoundSlitScanToCanvas({ src, target, drawSlice, params }) {
+  const { scanStartPos, isReflected, sliceSize } = params;
   const sliceSizeInt = parseInt(sliceSize.value);
-
-  const ctx = target.getContext("2d");
-  ctx.filter = "url(#turb)";
 
   const srcSectionH = scanStartPos.value * src.height;
   const scale = target.width / src.width;
   const liveWebcamSectionH = srcSectionH * scale;
 
-  if (webcamPosition.value === "start") {
-    drawLiveWebcamSectionAtStart({
-      src,
-      target,
-      isReflected: isReflected.value,
-      srcSectionH,
-      liveWebcamSectionH,
-    });
-  } else if (webcamPosition.value === "middle") {
-    // ctx.fillRect(0, 0, target.width, target.height);
-    drawLiveWebcamSectionInMiddle({
-      src,
-      target,
-      isReflected: isReflected.value,
-      srcSectionH,
-      liveWebcamSectionH,
-    });
-  } else {
-    drawLiveWebcamSectionAtEnd({
-      src,
-      target,
-      isReflected: isReflected.value,
-      srcSectionH,
-      liveWebcamSectionH,
-    });
-  }
+  drawLiveWebcamSectionInMiddle({
+    src,
+    target,
+    isReflected: isReflected.value,
+    srcSectionH,
+    liveWebcamSectionH,
+  });
 
   if (!drawSlice) return;
 
-  if (webcamPosition.value === "start") {
-    drawSliceMovingDown({
-      ctx,
-      target,
-      liveWebcamSectionH,
-      sliceSize: sliceSizeInt,
-    });
-  } else if (webcamPosition.value === "middle") {
-    drawSliceMovingAwayFromMiddle({
-      ctx,
-      target,
-      liveWebcamSectionH,
-      sliceSize: sliceSizeInt,
-    });
-  } else {
-    drawSliceMovingUp({
-      ctx,
-      target,
-      liveWebcamSectionH,
-      sliceSize: sliceSizeInt,
-      soundObjects,
-      soundOn,
-    });
-  }
+  // drawSliceMovingAwayFromMiddle({
+  //   ctx,
+  //   target,
+  //   liveWebcamSectionH,
+  //   sliceSize: sliceSizeInt,
+  // });
 }
 
 //
@@ -221,90 +174,6 @@ function getAvgColour(pixelData, startIndex, endIndex) {
   return { r: avgR, g: avgG, b: avgB };
 }
 
-function drawSliceMovingUp({
-  ctx,
-  target,
-  liveWebcamSectionH,
-  sliceSize,
-  soundObjects,
-  soundOn,
-}) {
-  const liveWebCamTop = target.height - liveWebcamSectionH;
-  const heightToShiftUp = liveWebCamTop + sliceSize;
-
-  const from = {
-    x: 0,
-    y: 0,
-    w: target.width,
-    h: heightToShiftUp,
-  };
-  const to = {
-    x: 0,
-    y: -sliceSize,
-    w: target.width,
-    h: heightToShiftUp,
-  };
-
-  ctx.drawImage(target, from.x, from.y, from.w, from.h, to.x, to.y, to.w, to.h);
-
-  if (soundOn.value && soundObjects && soundObjects.length > 0) {
-    const canvasData = ctx.getImageData(0, liveWebCamTop + 1, target.width, 1);
-    const pixelData = canvasData.data;
-
-    const pixelsPerNote = target.width / soundObjects.length;
-
-    for (let s = 0; s < soundObjects.length; s++) {
-      const startIndex = s * pixelsPerNote;
-      const endIndex = startIndex + pixelsPerNote;
-
-      const rgbAvgs = getAvgColour(pixelData, startIndex, endIndex);
-      const sObj = soundObjects[s];
-
-      ctx.fillStyle = `rgba(255, 0, 255, 0.5)`;
-      ctx.fillRect(startIndex, liveWebCamTop, 2, 10);
-
-      ctx.fillStyle = `rgba(0, 255, 255, 0.5)`;
-      ctx.fillRect(endIndex, liveWebCamTop, 2, 10);
-
-      // const diff = Math.abs(sObj.prevTriggerValue - avgColour);
-
-      const threshold = 40 / soundObjects.length;
-
-      const doTriggerNote = isChangedEnoughToBeTriggered(
-        sObj.prevTriggerValue,
-        rgbAvgs,
-        threshold
-      );
-
-      sObj.prevTriggerValue = rgbAvgs;
-
-      if (sObj.delayRetrigger > 0) {
-        sObj.delayRetrigger -= 0.1;
-      }
-
-      if (doTriggerNote) {
-        if (sObj.delayRetrigger <= 0) {
-          const { synth, note } = sObj;
-          synth.triggerAttackRelease(note, 1);
-          sObj.delayRetrigger = 2;
-        }
-      }
-    }
-  }
-}
-
-function isChangedEnoughToBeTriggered(prev, curr, threshold) {
-  const rDiff = Math.abs(curr.r - prev.r);
-  const gDiff = Math.abs(curr.g - prev.g);
-  const bDiff = Math.abs(curr.b - prev.b);
-
-  return rDiff > threshold || gDiff > threshold || bDiff > threshold;
-}
-
-// function map(val, in_min, in_max, out_min, out_max) {
-//   return ((val - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
-// }
-
 //
 // IN MIDDLE MOVING UP and DOWN
 //
@@ -339,6 +208,30 @@ function drawLiveWebcamSectionInMiddle({
     w: target.width,
     h: liveWebcamSectionH,
   };
+
+  // draw the dest to itself 1 pixel bigger offset by one pixel
+
+  ctx.drawImage(
+    target,
+    0,
+    0,
+    target.width,
+    target.height,
+    -1,
+    -1,
+    target.width + 2,
+    target.height + 2
+  );
+
+  const radius = dest.h / 2;
+  const centerX = dest.w / 2;
+  const centerY = dest.y + radius;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.clip();
+
   ctx.drawImage(
     src,
     source.x,
@@ -350,6 +243,7 @@ function drawLiveWebcamSectionInMiddle({
     dest.w,
     dest.h
   );
+  ctx.restore();
 
   // draw the left to the right, but flipped
   if (isReflected) {
