@@ -61,7 +61,7 @@ export function draw() {
   }
 
   const frameCanvas = getFlippedVideoCanvas(video, count);
-  count += 0.25;
+  count += 1;
 
   drawRoundSlitScan(frameCanvas, drawSlice, params);
 
@@ -69,24 +69,16 @@ export function draw() {
 }
 
 function drawRoundSlitScan(frameCanvas, drawSlice, params) {
-  const { canvasSize, mountSize } = params;
-  const topAdjust = 0;
-  const fullHeight = document.body.clientHeight - topAdjust;
-  let padding = parseFloat(mountSize.value) * fullHeight;
-
-  if (!padding) padding = 0;
-  const canvasHeight = fullHeight - (padding + padding);
+  const canvasHeight = document.body.clientHeight;
 
   if (
     artCanvas.height !== parseInt(canvasHeight) ||
-    artCanvas.width !== parseInt(canvasSize.value)
+    artCanvas.width !== parseInt(canvasHeight)
   ) {
     const container = document.getElementById("container");
     container.style.position = "absolute";
-    container.style.top = topAdjust + "px";
-
     artCanvas.height = canvasHeight;
-    artCanvas.width = canvasSize.value;
+    artCanvas.width = canvasHeight;
   }
 
   drawRoundSlitScanToCanvas({

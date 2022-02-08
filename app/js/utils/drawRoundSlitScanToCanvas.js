@@ -17,26 +17,14 @@ export function drawRoundSlitScanToCanvas({ src, target, drawSlice, params }) {
   });
 }
 
-//
-// AT TOP MOVING DOWN
-//
-
-//
-// IN MIDDLE MOVING UP and DOWN
-//
-
 function drawLiveWebcamSectionInMiddle({
   target,
   src,
   srcSectionH,
-  liveWebcamSectionH,
   sliceSize,
   drawSlice,
 }) {
   const ctx = target.getContext("2d");
-  const targMiddle = target.height / 2;
-  const halfSection = liveWebcamSectionH / 2;
-  const targY = targMiddle - halfSection;
 
   // remove from top and bottom when cropping source
   const srcMiddle = src.height / 2;
@@ -49,12 +37,6 @@ function drawLiveWebcamSectionInMiddle({
     y: srcY,
     w: src.width,
     h: srcSectionH,
-  };
-  const dest = {
-    x: 0,
-    y: targY,
-    w: target.width,
-    h: liveWebcamSectionH,
   };
 
   if (drawSlice) {
@@ -79,8 +61,6 @@ function drawLiveWebcamSectionInMiddle({
   const hToWRatio = src.width / src.height;
   const outputHeight = outputRadius * 2;
   const outputWidth = outputHeight * hToWRatio;
-  // const outputX = centerX - outputWidth / 2;
-  // const outputY = centerY - outputHeight / 2;
 
   ctx.save();
   ctx.beginPath();
@@ -105,6 +85,7 @@ function drawLiveWebcamSectionInMiddle({
   ctx.restore();
 }
 
+// https://stackoverflow.com/questions/4839993/how-to-draw-polygons-on-an-html5-canvas
 function regPolyPath(r, p, ctx) {
   //Radius, #points, context
   //Azurethi was here!
