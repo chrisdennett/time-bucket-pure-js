@@ -7,14 +7,14 @@ const defaultParams = {
     min: 1,
     max: 80,
     step: 1,
-    value: 5,
+    value: 1,
   },
   msPerFrame: {
     type: "slider",
     min: 1,
     max: 80,
     step: 1,
-    value: 1,
+    value: 42,
   },
   canvasSize: {
     type: "slider",

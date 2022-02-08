@@ -17,27 +17,8 @@ export function drawRoundSlitScanToCanvas({ src, target, drawSlice, params }) {
   });
 }
 
-function drawLiveWebcamSectionInMiddle({
-  target,
-  src,
-  srcSectionH,
-  sliceSize,
-  drawSlice,
-}) {
+function drawLiveWebcamSectionInMiddle({ target, src, sliceSize, drawSlice }) {
   const ctx = target.getContext("2d");
-
-  // remove from top and bottom when cropping source
-  const srcMiddle = src.height / 2;
-  const halfSrcSection = srcSectionH / 2;
-  const srcY = srcMiddle - halfSrcSection;
-
-  // draw live webcam portion of screen
-  const source = {
-    x: 0,
-    y: srcY,
-    w: src.width,
-    h: srcSectionH,
-  };
 
   const centerX = target.width / 2;
   const centerY = target.height / 2;
@@ -47,26 +28,22 @@ function drawLiveWebcamSectionInMiddle({
   const outputHeight = outputRadius * 2;
   const outputWidth = outputHeight * hToWRatio;
 
+  const sideLength = 76.537; // 2 * outputRadius * Math.sin(degrees_to_radians(22.5));
+
   if (drawSlice) {
     ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.moveTo(outputRadius, 0);
-    ctx.fillStyle = "red";
-    ctx.fillRect(0, 0, 10, 10);
-    ctx.restore();
-
-    // draw the dest to itself 2 pixel wider and higher offset by one pixel each way
     ctx.drawImage(
       target,
+      centerX - sideLength / 2,
       0,
-      0,
-      target.width,
-      target.height,
-      -sliceSize,
-      -sliceSize,
-      target.width + sliceSize + sliceSize,
-      target.height + sliceSize + sliceSize
+      sideLength,
+      centerY - sideLength,
+      centerX - sideLength / 2,
+      0 - sliceSize,
+      sideLength,
+      centerY - sideLength
     );
+    ctx.restore();
   }
 
   ctx.save();
@@ -77,22 +54,28 @@ function drawLiveWebcamSectionInMiddle({
 
   ctx.drawImage(
     src,
-    source.x,
-    source.y,
-    source.w,
-    source.h,
+    0,
+    0,
+    src.width,
+    src.height,
     -outputWidth / 2,
     -outputHeight / 2,
     outputWidth,
     outputHeight
   );
+
   ctx.restore();
 }
+
+// function degrees_to_radians(degrees) {
+//   var pi = Math.PI;
+//   return degrees * (pi / 180);
+// }
 
 // https://stackoverflow.com/questions/4839993/how-to-draw-polygons-on-an-html5-canvas
 function regPolyPath(r, p, ctx) {
   //Radius, #points, context --- Azurethi was here!
-  const rot = (2 * Math.PI) / p;
+  const rot = 0.785398; //(2 * Math.PI) / p;
 
   ctx.moveTo(r, 0);
   for (let i = 0; i < p + 1; i++) {
@@ -103,8 +86,36 @@ function regPolyPath(r, p, ctx) {
 }
 
 function drawOctagon(r, ctx) {
-  const rot = (2 * Math.PI) / 16;
+  const rot = 0.392699; //(2 * Math.PI) / 16;
+  // console.log("rot: ", rot);
   ctx.rotate(rot);
   regPolyPath(r, 8, ctx);
   ctx.rotate(-rot);
 }
+
+// function drawOctagonSides(r, ctx) {
+//   const rot = (2 * Math.PI) / 16;
+
+//   ctx.rotate(rot);
+
+//   regPolyEdges(r, 8, ctx);
+
+//   ctx.rotate(-rot);
+// }
+
+// function regPolyEdges(r, p, ctx) {
+//   //Radius, #points, context --- Azurethi was here!
+//   const rot = (2 * Math.PI) / p;
+
+//   for (let i = 0; i < p + 1; i++) {
+//     ctx.beginPath();
+//     ctx.moveTo(r, 0);
+
+//     ctx.rotate(rot);
+//     ctx.strokeStyle = `hsla(${Math.random() * 360}, 64%, 45%, 0.95)`;
+
+//     ctx.lineTo(r, 0);
+//     ctx.stroke();
+//   }
+//   ctx.rotate((-2 * Math.PI) / p);
+// }
