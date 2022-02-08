@@ -25,17 +25,6 @@ export function drawRoundSlitScanToCanvas({ src, target, drawSlice, params }) {
 // IN MIDDLE MOVING UP and DOWN
 //
 
-function regPolyPath(r, p, ctx) {
-  //Radius, #points, context
-  //Azurethi was here!
-  ctx.moveTo(r, 0);
-  for (i = 0; i < p + 1; i++) {
-    ctx.rotate((2 * Math.PI) / p);
-    ctx.lineTo(r, 0);
-  }
-  ctx.rotate((-2 * Math.PI) / p);
-}
-
 function drawLiveWebcamSectionInMiddle({
   target,
   src,
@@ -90,12 +79,16 @@ function drawLiveWebcamSectionInMiddle({
   const hToWRatio = src.width / src.height;
   const outputHeight = outputRadius * 2;
   const outputWidth = outputHeight * hToWRatio;
-  const outputX = centerX - outputWidth / 2;
-  const outputY = centerY - outputHeight / 2;
+  // const outputX = centerX - outputWidth / 2;
+  // const outputY = centerY - outputHeight / 2;
 
   ctx.save();
   ctx.beginPath();
-  ctx.arc(centerX, centerY, outputRadius, 0, Math.PI * 2);
+  ctx.translate(centerX, centerY);
+  const rot = (2 * Math.PI) / 16;
+  ctx.rotate(rot);
+  regPolyPath(outputRadius, 8, ctx);
+  ctx.rotate(-rot);
   ctx.clip();
 
   ctx.drawImage(
@@ -104,10 +97,23 @@ function drawLiveWebcamSectionInMiddle({
     source.y,
     source.w,
     source.h,
-    outputX,
-    outputY,
+    -outputWidth / 2,
+    -outputHeight / 2,
     outputWidth,
     outputHeight
   );
   ctx.restore();
+}
+
+function regPolyPath(r, p, ctx) {
+  //Radius, #points, context
+  //Azurethi was here!
+  const rot = (2 * Math.PI) / p;
+
+  ctx.moveTo(r, 0);
+  for (let i = 0; i < p + 1; i++) {
+    ctx.rotate(rot);
+    ctx.lineTo(r, 0);
+  }
+  ctx.rotate((-2 * Math.PI) / p);
 }

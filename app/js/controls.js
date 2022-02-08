@@ -7,7 +7,7 @@ const defaultParams = {
     min: 1,
     max: 80,
     step: 1,
-    value: 2,
+    value: 5,
   },
   msPerFrame: {
     type: "slider",
@@ -44,15 +44,15 @@ const defaultParams = {
 };
 const params = JSON.parse(JSON.stringify(defaultParams));
 
-function debounce(func, timeout = 300) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(this, args);
-    }, timeout);
-  };
-}
+// function debounce(func, timeout = 300) {
+//   let timer;
+//   return (...args) => {
+//     clearTimeout(timer);
+//     timer = setTimeout(() => {
+//       func.apply(this, args);
+//     }, timeout);
+//   };
+// }
 
 function addPhysicalControls(params) {
   // var socket = io();
