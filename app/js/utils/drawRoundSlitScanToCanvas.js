@@ -39,7 +39,22 @@ function drawLiveWebcamSectionInMiddle({
     h: srcSectionH,
   };
 
+  const centerX = target.width / 2;
+  const centerY = target.height / 2;
+
+  const outputRadius = 100;
+  const hToWRatio = src.width / src.height;
+  const outputHeight = outputRadius * 2;
+  const outputWidth = outputHeight * hToWRatio;
+
   if (drawSlice) {
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.moveTo(outputRadius, 0);
+    ctx.fillStyle = "red";
+    ctx.fillRect(0, 0, 10, 10);
+    ctx.restore();
+
     // draw the dest to itself 2 pixel wider and higher offset by one pixel each way
     ctx.drawImage(
       target,
@@ -54,21 +69,10 @@ function drawLiveWebcamSectionInMiddle({
     );
   }
 
-  const centerX = target.width / 2;
-  const centerY = target.height / 2;
-
-  const outputRadius = 100;
-  const hToWRatio = src.width / src.height;
-  const outputHeight = outputRadius * 2;
-  const outputWidth = outputHeight * hToWRatio;
-
   ctx.save();
   ctx.beginPath();
   ctx.translate(centerX, centerY);
-  const rot = (2 * Math.PI) / 16;
-  ctx.rotate(rot);
-  regPolyPath(outputRadius, 8, ctx);
-  ctx.rotate(-rot);
+  drawOctagon(outputRadius, ctx);
   ctx.clip();
 
   ctx.drawImage(
@@ -87,8 +91,7 @@ function drawLiveWebcamSectionInMiddle({
 
 // https://stackoverflow.com/questions/4839993/how-to-draw-polygons-on-an-html5-canvas
 function regPolyPath(r, p, ctx) {
-  //Radius, #points, context
-  //Azurethi was here!
+  //Radius, #points, context --- Azurethi was here!
   const rot = (2 * Math.PI) / p;
 
   ctx.moveTo(r, 0);
@@ -97,4 +100,11 @@ function regPolyPath(r, p, ctx) {
     ctx.lineTo(r, 0);
   }
   ctx.rotate((-2 * Math.PI) / p);
+}
+
+function drawOctagon(r, ctx) {
+  const rot = (2 * Math.PI) / 16;
+  ctx.rotate(rot);
+  regPolyPath(r, 8, ctx);
+  ctx.rotate(-rot);
 }
