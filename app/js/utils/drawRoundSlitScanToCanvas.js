@@ -13,16 +13,8 @@ export function drawRoundSlitScanToCanvas({ src, target, drawSlice, params }) {
     srcSectionH,
     liveWebcamSectionH,
     sliceSize: sliceSizeInt,
+    drawSlice,
   });
-
-  if (!drawSlice) return;
-
-  // drawSliceMovingAwayFromMiddle({
-  //   ctx,
-  //   target,
-  //   liveWebcamSectionH,
-  //   sliceSize: sliceSizeInt,
-  // });
 }
 
 //
@@ -33,13 +25,24 @@ export function drawRoundSlitScanToCanvas({ src, target, drawSlice, params }) {
 // IN MIDDLE MOVING UP and DOWN
 //
 
+function regPolyPath(r, p, ctx) {
+  //Radius, #points, context
+  //Azurethi was here!
+  ctx.moveTo(r, 0);
+  for (i = 0; i < p + 1; i++) {
+    ctx.rotate((2 * Math.PI) / p);
+    ctx.lineTo(r, 0);
+  }
+  ctx.rotate((-2 * Math.PI) / p);
+}
+
 function drawLiveWebcamSectionInMiddle({
   target,
   src,
-  isReflected,
   srcSectionH,
   liveWebcamSectionH,
   sliceSize,
+  drawSlice,
 }) {
   const ctx = target.getContext("2d");
   const targMiddle = target.height / 2;
@@ -65,26 +68,34 @@ function drawLiveWebcamSectionInMiddle({
     h: liveWebcamSectionH,
   };
 
-  // draw the dest to itself 2 pixel wider and higher offset by one pixel each way
-  ctx.drawImage(
-    target,
-    0,
-    0,
-    target.width,
-    target.height,
-    -sliceSize,
-    -sliceSize,
-    target.width + sliceSize + sliceSize,
-    target.height + sliceSize + sliceSize
-  );
+  if (drawSlice) {
+    // draw the dest to itself 2 pixel wider and higher offset by one pixel each way
+    ctx.drawImage(
+      target,
+      0,
+      0,
+      target.width,
+      target.height,
+      -sliceSize,
+      -sliceSize,
+      target.width + sliceSize + sliceSize,
+      target.height + sliceSize + sliceSize
+    );
+  }
 
-  const radius = dest.h / 2;
-  const centerX = dest.w / 2;
-  const centerY = dest.y + radius;
+  const centerX = target.width / 2;
+  const centerY = target.height / 2;
+
+  const outputRadius = 100;
+  const hToWRatio = src.width / src.height;
+  const outputHeight = outputRadius * 2;
+  const outputWidth = outputHeight * hToWRatio;
+  const outputX = centerX - outputWidth / 2;
+  const outputY = centerY - outputHeight / 2;
 
   ctx.save();
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.arc(centerX, centerY, outputRadius, 0, Math.PI * 2);
   ctx.clip();
 
   ctx.drawImage(
@@ -93,87 +104,10 @@ function drawLiveWebcamSectionInMiddle({
     source.y,
     source.w,
     source.h,
-    dest.x,
-    dest.y,
-    dest.w,
-    dest.h
+    outputX,
+    outputY,
+    outputWidth,
+    outputHeight
   );
   ctx.restore();
-
-  // draw the left to the right, but flipped
-  if (isReflected) {
-    const halfW = dest.w / 2;
-
-    ctx.save();
-    ctx.translate(halfW * 2, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(
-      target,
-      dest.x,
-      dest.y,
-      dest.w / 2,
-      dest.h,
-      dest.x,
-      dest.y,
-      halfW,
-      dest.h
-    );
-    ctx.restore();
-  }
-}
-
-function drawSliceMovingAwayFromMiddle({
-  ctx,
-  target,
-  liveWebcamSectionH,
-  sliceSize,
-}) {
-  // moving up
-  const middleY = target.height / 2;
-  const halfSectionH = liveWebcamSectionH / 2;
-  const topOfSection = middleY - halfSectionH;
-  const heightToShiftUp = topOfSection + sliceSize;
-
-  const from = {
-    x: 0,
-    y: 0,
-    w: target.width,
-    h: heightToShiftUp,
-  };
-  const to = {
-    x: 0,
-    y: -sliceSize,
-    w: target.width,
-    h: heightToShiftUp,
-  };
-
-  ctx.drawImage(target, from.x, from.y, from.w, from.h, to.x, to.y, to.w, to.h);
-
-  // moving down
-  const bottomOfSection = middleY + halfSectionH;
-  const heightToShiftDown = target.height - bottomOfSection + sliceSize;
-  const from2 = {
-    x: 0,
-    y: bottomOfSection - sliceSize,
-    w: target.width,
-    h: heightToShiftDown,
-  };
-  const to2 = {
-    x: 0,
-    y: bottomOfSection,
-    w: target.width,
-    h: heightToShiftDown,
-  };
-
-  ctx.drawImage(
-    target,
-    from2.x,
-    from2.y,
-    from2.w,
-    from2.h,
-    to2.x,
-    to2.y,
-    to2.w,
-    to2.h
-  );
 }

@@ -7,7 +7,7 @@ const defaultParams = {
     min: 1,
     max: 80,
     step: 1,
-    value: 3,
+    value: 2,
   },
   msPerFrame: {
     type: "slider",
